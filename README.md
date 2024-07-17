@@ -26,9 +26,9 @@ The Contribution Management App is designed to manage contributions among member
 
 ### Prerequisites
 
-- Python 3.x
+- Python 3.12
 - pip
-- PostgreSQL (if used)
+- PostgreSQL
 
 ### Steps
 
@@ -99,18 +99,10 @@ Contributions are welcome! Please submit a pull request or open an issue for any
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
 - [Django](https://www.djangoproject.com/)
 - [Africa's Talking](https://africastalking.com/)
 - [Safaricom Mpesa](https://developer.safaricom.co.ke/docs)
-
-```
-
-### Next Steps
-
-- Customize the repository link and any other details specific to your project.
-- Add more sections as needed, such as FAQs or troubleshooting tips.
-- Consider including screenshots or examples of the application in action.
