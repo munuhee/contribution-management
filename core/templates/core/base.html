@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link
+      href="{% load static %}{% static 'css/styles.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <main class="">
+      <aside
+        class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left"
+        id="show-side-navigation1"
+      >
+        <i
+          class="uil-bars close-aside d-md-none d-lg-none"
+          data-close="show-side-navigation1"
+        ></i>
+        <div class="sidebar-header d-flex px-5 py-4">
+          <div class="">
+            <h5 class="fs-6 mb-0">
+              <a class="text-decoration-none" href="#">{{user.username}}</a>
+            </h5>
+            <p class="mt-1 mb-0">Administrator</p>
+          </div>
+        </div>
+
+        <ul class="navbar-nav">
+          <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'dashboard_view' %}"><i class="uil-estate fa-fw"></i> Dashboard</a>
+          </li>
+          <li class="nav-item {% if request.path == '/members/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'list_members' %}"><i class="uil-users-alt"></i> Members</a>
+          </li>
+          <li class="nav-item {% if request.path == '/cases/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'list_cases' %}"><i class="uil-users-alt"></i> Cases</a>
+          </li>
+          <li class="nav-item {% if request.path == '/penalties/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'list_penalties' %}"><i class="uil-users-alt"></i> Penalties</a>
+          </li>
+          <li class="nav-item {% if request.path == '/transactions/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'list_transactions' %}"><i class="uil-folder"></i> Transactions</a>
+          </li>
+          <li class="nav-item {% if request.path == '/notifications/sent_messages/' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'list_sent_messages' %}"><i class="uil-envelope-download fa-fw"></i> SMS</a>
+          </li>
+        </ul>
+        <hr />
+        <footer class="sidebar-footer p-3 mt-auto">
+          <div class="d-flex justify-content-center mb-2">
+            <button id="logout-btn" type="submit" class="btn btn-outline-danger w-100 text-white nav-link">
+              <i class="bi bi-box-arrow-left"></i> Logout
+            </button>
+          </div>
+          <p class="text-center mb-0">© 2024 Your Company</p>
+          <p class="text-center mb-0">Privacy Policy</p>
+        </footer>
+      </aside>
+      <div class="">
+        <section id="wrapper">
+          <nav class="navbar navbar-expand-md">
+            <div class="container-fluid mx-2">
+              <div class="navbar-header">
+                <button
+                  class="navbar-toggler"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#toggle-navbar"
+                  aria-controls="toggle-navbar"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <i class="uil-bars text-white"></i>
+                </button>
+              </div>
+              <div class="collapse navbar-collapse" id="toggle-navbar">
+                <ul class="navbar-nav ms-auto">
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >Settings</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#">My account</a></li>
+                      <li><a class="dropdown-item" href="#">My inbox</a></li>
+                      <li><a class="dropdown-item" href="#">Help</a></li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li><a class="dropdown-item" href="#">Log out</a></li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#"
+                      ><i
+                        data-show="show-side-navigation1"
+                        class="uil-bars show-side-btn"
+                      ></i
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          {% if messages %}
+            <div class="alert-container px-3 pt-2">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  <i class="uil uil-{{ message.tags }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% block content %}
+          <!-- Content goes here -->
+          {% endblock %}
+        </section>
+      </div>
+    </main>
+    <!-- Include Bootstrap's JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-rbsA2mE7MvlU8O2D6WvW8fJ4OMwF2D7xocjBf8V8wXgh0C8kFZj5QNB2vN6lGeI7p" crossorigin="anonymous"></script>
+    <script src="{% load static %}{% static 'js/main.js' %}"></script>
+  </body>
+</html>

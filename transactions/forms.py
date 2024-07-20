@@ -7,7 +7,8 @@ class TransactionForm(forms.ModelForm):
         model = Transaction
         fields = ['member', 'amount']
         widgets = {
-            'amount': forms.NumberInput(attrs={'step': '0.01'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'member': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'member': 'Member',

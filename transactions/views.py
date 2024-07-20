@@ -7,7 +7,9 @@ from .forms import TransactionForm
 def list_transactions(request):
     transactions = Transaction.objects.all()
     return render(
-        request, 'transactions/list.html', {'transactions': transactions}
+        request,
+        'transactions/transactions_list.html',
+        {'transactions': transactions}
     )
 
 
@@ -20,7 +22,9 @@ def add_transaction(request):
             return redirect('list_transactions')
     else:
         form = TransactionForm()
-    return render(request, 'transactions/form.html', {'form': form})
+    return render(
+        request, 'transactions/transactions_form.html', {'form': form}
+    )
 
 
 # Update a transaction
@@ -33,7 +37,9 @@ def update_transaction(request, transaction_id):
             return redirect('list_transactions')
     else:
         form = TransactionForm(instance=transaction)
-    return render(request, 'transactions/form.html', {'form': form})
+    return render(
+        request, 'transactions/transactions_form.html', {'form': form}
+    )
 
 
 # Delete a transaction

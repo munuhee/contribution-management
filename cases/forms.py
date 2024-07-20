@@ -7,7 +7,29 @@ class CaseForm(forms.ModelForm):
         model = Case
         fields = ['case_number', 'amount', 'description', 'deadline']
         widgets = {
-            'deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'case_number': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter case number'
+                }
+            ),
+            'amount': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'step': '0.01',
+                    'placeholder': 'Enter amount'
+                    }
+                ),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': 'Enter description'
+                    }
+                ),
+            'deadline': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'}
+            ),
         }
         labels = {
             'case_number': 'Case Number',

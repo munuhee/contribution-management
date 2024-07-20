@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5 p-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm border-light">
+                <div class="card-body">
+                    <h2 class="mb-4 text-center">
+                        {% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
+                    </h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                    {{ form.first_name }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
+                                    {{ form.phone_number }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.member_number.id_for_label }}" class="form-label">{{ form.member_number.label }}</label>
+                                    {{ form.member_number }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.national_id_number.id_for_label }}" class="form-label">{{ form.national_id_number.label }}</label>
+                                    {{ form.national_id_number }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label for="{{ form.account_balance.id_for_label }}" class="form-label">{{ form.account_balance.label }}</label>
+                                    {{ form.account_balance }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                            </button>
+                            <a href="{% url 'list_members' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

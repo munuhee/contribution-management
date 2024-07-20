@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Update Transaction{% else %}Add Transaction{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container my-5 p-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4 text-center">{% if form.instance.pk %}Update Transaction{% else %}Add Transaction{% endif %}</h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            {{ form.member.label_tag }}
+                            {{ form.member }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.amount.label_tag }}
+                            {{ form.amount }}
+                            <small class="form-text text-muted">Enter the amount in KES.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                        </button>
+                        <a href="{% url 'list_transactions' %}" class="btn btn-secondary btn-lg ms-2">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

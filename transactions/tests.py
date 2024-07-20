@@ -34,15 +34,16 @@ class TestTransactionModel:
             member=create_member,
             amount=500.00
         )
-        assert str(transaction) == (
-            f"{transaction.reference} - {transaction.amount}"
+        expected_str = "{} - {}".format(
+            transaction.reference, transaction.amount
         )
+        assert str(transaction) == expected_str
 
     def test_generate_reference(self):
         random_suffix = ''.join(
             random.choices(string.ascii_uppercase + string.digits, k=6)
         )
-        expected_reference = f"MSBK{random_suffix}"
+        expected_reference = "MSBK{}".format(random_suffix)
         transaction = Transaction()
         reference = transaction.generate_reference()
         assert reference.startswith("MSBK")
@@ -63,16 +64,15 @@ class TestUnmatchedTransactionsModel:
         unmatched_transaction = UnmatchedTransactions.objects.create(
             amount=300.00
         )
-        assert str(unmatched_transaction) == (
-            f"{unmatched_transaction.reference}"
-            f"- {unmatched_transaction.amount}"
+        assert str(unmatched_transaction) == "{}-{}".format(
+            unmatched_transaction.reference, unmatched_transaction.amount
         )
 
     def test_generate_reference(self):
         random_suffix = ''.join(
             random.choices(string.ascii_uppercase + string.digits, k=6)
         )
-        expected_reference = f"UT{random_suffix}"
+        expected_reference = "UT{}".format(random_suffix)
         unmatched_transaction = UnmatchedTransactions()
         reference = unmatched_transaction.generate_reference()
         assert reference.startswith("UT")

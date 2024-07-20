@@ -1,8 +1,15 @@
 from django.urls import path
-from .views import MpesaCallbackView
+from .views import MpesaValidationView, MpesaConfirmationView
 
 urlpatterns = [
     path(
-        'mpesa-callback/', MpesaCallbackView.as_view(), name='mpesa_callback'
+        'validation/',
+        MpesaValidationView.as_view(),
+        name='mpesa_validation'
+    ),
+    path(
+        'confirmation/',
+        MpesaConfirmationView.as_view(),
+        name='mpesa_confirmation'
     ),
 ]

@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  <div class="container mt-5">
+    <!-- Display Messages -->
+    {% if messages %}
+      <div class="alert-container position-fixed top-0 end-0 p-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="uil uil-{{ message.tags }} me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <h2 class="mb-0">
+        <i class="uil uil-user-circle fs-2 me-2 text-primary"></i> Member Dashboard
+      </h2>
+      <div class="d-flex gap-2">
+        <a href="{% url 'update_member' member.id %}" class="btn btn-primary d-inline-flex align-items-center shadow-lg rounded-pill">
+          <i class="uil uil-edit me-2"></i> Edit Profile
+        </a>
+        <a href="{% url 'delete_member' member.id %}" class="btn btn-danger d-inline-flex align-items-center shadow-lg rounded-pill" onclick="return confirm('Are you sure you want to delete this member?');">
+          <i class="uil uil-trash me-2"></i> Delete Account
+        </a>
+      </div>
+    </div>
+
+    <!-- Member Information and Account Balance -->
+    <div class="row mb-4 p-4">
+      <!-- Member Information Card -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-header bg-primary text-white d-flex align-items-center">
+            <i class="uil uil-info-circle fs-4 me-2"></i>
+            <h5 class="mb-0">Member Information</h5>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled">
+              <li class="d-flex align-items-center mb-3">
+                <i class="uil uil-user fs-4 me-2 text-primary"></i>
+                <strong class="text-muted">Full Name:</strong> <span class="text-dark">{{ member.first_name }} {{ member.last_name }}</span>
+              </li>
+              <li class="d-flex align-items-center mb-3">
+                <i class="uil uil-phone fs-4 me-2 text-primary"></i>
+                <strong class="text-muted">Phone Number:</strong> <span class="text-dark">{{ member.phone_number }}</span>
+              </li>
+              <li class="d-flex align-items-center mb-3">
+                <i class="uil uil-id-card fs-4 me-2 text-primary"></i>
+                <strong class="text-muted">Member Number:</strong> <span class="text-dark">{{ member.member_number }}</span>
+              </li>
+              <li class="d-flex align-items-center mb-3">
+                <i class="uil uil-card-id fs-4 me-2 text-primary"></i>
+                <strong class="text-muted">National ID:</strong> <span class="text-dark">{{ member.national_id_number }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Balance and Penalty Balance Card -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-lg border-0 rounded-4 bg-gradient-light p-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-4">
+              <!-- Account Balance Circle -->
+              <div class="text-center">
+                <h5 class="card-title mb-4 text-primary">
+                  <i class="uil uil-wallet fs-3"></i> Account Balance
+                </h5>
+                <div class="circle-container">
+                  <div class="circle bg-primary text-white">
+                    KES {{ member.account_balance|floatformat:2 }}
+                  </div>
+                </div>
+              </div>
+              <!-- Penalty Balance Circle -->
+              <div class="text-center">
+                <h5 class="card-title mb-4 text-danger">
+                  <i class="uil uil-exclamation-triangle fs-3"></i> Penalty Balance
+                </h5>
+                <div class="circle-container">
+                  <div class="circle bg-danger text-white">
+                    KES {{ penalty_balance|floatformat:2 }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+              <button class="btn btn-success btn-sm rounded-pill shadow-lg">
+                <i class="uil uil-sync me-2"></i> Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions and Penalties Summary -->
+    <div class="row">
+      <!-- Transactions Summary -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-header bg-success text-white d-flex align-items-center">
+            <i class="uil uil-credit-card fs-4 me-2"></i>
+            <h5 class="mb-0">Transaction History</h5>
+          </div>
+          <div class="card-body">
+            <p><strong><i class="uil uil-money-bill fs-4 me-2"></i> Total Transactions:</strong> <span class="text-success">KSh {{ total_transactions|floatformat:2 }}</span></p>
+            {% if transactions %}
+              <table class="table table-hover table-bordered">
+                <thead>
+                  <tr class="bg-light">
+                    <th scope="col">Reference</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for transaction in transactions %}
+                    <tr>
+                      <td>{{ transaction.reference }}</td>
+                      <td>{{ transaction.phone_number }}</td>
+                      <td>KSh {{ transaction.amount|floatformat:2 }}</td>
+                      <td>{{ transaction.date|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <p class="text-muted">No transactions found.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Penalties Summary -->
+      <div class="col-lg-6">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-header bg-danger text-white d-flex align-items-center">
+            <i class="uil uil-exclamation-triangle fs-4 me-2"></i>
+            <h5 class="mb-0">Penalty History</h5>
+          </div>
+          <div class="card-body">
+            <p><strong><i class="uil uil-times-circle fs-4 me-2"></i> Penalties Unpaid:</strong> <span class="text-danger">KSh {{ penalties_unpaid|floatformat:2 }}</span></p>
+            <p><strong><i class="uil uil-check-circle fs-4 me-2"></i> Penalties Paid:</strong> <span class="text-success">KSh {{ penalties_paid|floatformat:2 }}</span></p>
+            {% if penalties %}
+              <table class="table table-hover table-bordered">
+                <thead>
+                  <tr class="bg-light">
+                    <th scope="col">Case</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for penalty in penalties %}
+                    <tr>
+                      <td>{{ penalty.case }}</td>
+                      <td>KSh {{ penalty.amount|floatformat:2 }}</td>
+                      <td>{{ penalty.date|date:"d/m/Y H:i" }}</td>
+                      <td>
+                        {% if penalty.is_paid %}
+                          <span class="badge bg-success text-light"><i class="uil uil-check me-1"></i> Paid</span>
+                        {% else %}
+                          <span class="badge bg-warning text-dark"><i class="uil uil-times me-1"></i> Unpaid</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <p class="text-muted">No penalties found.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

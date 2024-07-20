@@ -1,60 +1,22 @@
 import json
-import base64
-import requests
-from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from django.conf import settings
+from decimal import Decimal
+from django.views import View
 from transactions.models import Transaction, UnmatchedTransactions
+from penalties.models import Penalty
 from members.models import Member
 
 
-def get_access_token():
-    try:
-        api_key = (
-            f"{settings.MPESA_CONSUMER_KEY}:{settings.MPESA_CONSUMER_SECRET}"
-        )
-        encoded_key = base64.b64encode(api_key.encode()).decode()
-
-        headers = {
-            'Authorization': f'Basic {encoded_key}',
-            'Content-Type': 'application/json'
-        }
-
-        response = requests.get(settings.MPESA_AUTH_URL, headers=headers)
-        response.raise_for_status()
-        return response.json().get('access_token')
-    except requests.RequestException as e:
-        print(f"Error obtaining access token: {e}")
-        return None
+@method_decorator(csrf_exempt, name='dispatch')
+class MpesaValidationView(View):
+    def post(self, request, *args, **kwargs):
+        pass
 
 
-def register_urls():
-    access_token = get_access_token()
-    if not access_token:
-        print("Failed to obtain access token")
-        return
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {access_token}'
-    }
-
-    payload = {
-        "ShortCode": settings.MPESA_SHORTCODE,
-        "ResponseType": "Completed",
-        "ConfirmationURL": settings.CONFIRMATION_URL,
-        "ValidationURL": settings.VALIDATION_URL,
-    }
-
-    response = requests.post(
-        settings.MPESA_REGISTER_URL,
-        headers=headers,
-        data=json.dumps(payload)
-    )
-    print(response.text.encode('utf8'))
-
-
-class MpesaCallbackView(View):
+@method_decorator(csrf_exempt, name='dispatch')
+class MpesaConfirmationView(View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
@@ -66,28 +28,60 @@ class MpesaCallbackView(View):
 
         transaction_type = data.get("TransactionType")
 
-        if transaction_type == "PayBill":
+        if transaction_type == "Pay Bill":
             self.handle_payment(data)
 
         return JsonResponse({"status": "success"}, status=200)
 
     def handle_payment(self, data):
         trans_id = data.get("TransID")
-        trans_amount = float(data.get("TransAmount", 0))
+        trans_amount = Decimal(data.get("TransAmount", 0))
         bill_ref_number = data.get("BillRefNumber")
         msisdn = data.get("MSISDN")
 
         try:
-            member = Member.objects.get(member_number=bill_ref_number)
-            Transaction.objects.create(
-                member=member,
-                trans_id=trans_id,
-                amount=trans_amount,
-                phone_number=msisdn,
-            )
+            if bill_ref_number.endswith("P"):
+                member_number = bill_ref_number[:-1]
+                member = Member.objects.get(member_number=member_number)
 
-            member.account_balance += trans_amount
-            member.save()
+                Transaction.objects.create(
+                    member=member,
+                    trans_id=trans_id,
+                    amount=trans_amount,
+                    phone_number=msisdn,
+                )
+
+                member.account_balance += trans_amount
+                member.save()
+
+                # Handle the penalty payment
+                penalties = Penalty.objects.filter(
+                    member=member, is_paid=False
+                ).order_by('date')
+                remaining_amount = trans_amount
+
+                for penalty in penalties:
+                    if remaining_amount >= penalty.amount:
+                        remaining_amount -= penalty.amount
+                        penalty.is_paid = True
+                        penalty.save()
+                    else:
+                        penalty.amount -= remaining_amount
+                        penalty.save()
+                        remaining_amount = 0
+                        break
+            else:
+                member = Member.objects.get(member_number=bill_ref_number)
+                Transaction.objects.create(
+                    member=member,
+                    trans_id=trans_id,
+                    amount=trans_amount,
+                    phone_number=msisdn,
+                )
+
+                member.account_balance += trans_amount
+                member.save()
+
             # Optionally, send SMS notification here
         except Member.DoesNotExist:
             UnmatchedTransactions.objects.create(

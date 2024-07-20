@@ -2,4 +2,5 @@ Django==5.0.7
 django-cors-headers==4.4.0
 pytest==8.2.2
 pytest-django==4.8.0
+python-dotenv==1.0.1
 requests==2.32.3

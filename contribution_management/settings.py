@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv.main import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,7 @@ SECRET_KEY = 'django-insecure-k@udu=bk+2vmiwgn52r48e46cd0wh_0-e$)q!k8q6p%h2keqv2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -117,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -127,7 +130,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -136,16 +145,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Africa's Talking API credentials
 # settings.py
-AFRICA_TALKING_USERNAME = 'your_username'  # 'sandbox' for testing
-AFRICA_TALKING_API_KEY = 'your_api_key'
+AFRICA_TALKING_USERNAME = os.getenv('AFRICA_TALKING_USERNAME')
+AFRICA_TALKING_API_KEY = os.getenv('AFRICA_TALKING_API_KEY')
 
 # Mpesa settings
-MPESA_ENV = 'sandbox'
-MPESA_CONSUMER_KEY = 'your_consumer_key'
-MPESA_CONSUMER_SECRET = 'your_consumer_secret'
-MPESA_SHORTCODE = 'your_shortcode'
-CONFIRMATION_URL = 'https://your_domain.com/mpesa/confirmation/'
-VALIDATION_URL = 'https://your_domain.com/mpesa/validation/'
+MPESA_ENV = os.getenv('MPESA_ENV')
+MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE')
+CONFIRMATION_URL = os.getenv('MPESA_CONFIRMATION_URL')
+VALIDATION_URL = os.getenv('VALIDATION_URL')
 
 if MPESA_ENV == 'sandbox':
     # Mpesa sandbox URLs

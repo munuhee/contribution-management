@@ -7,7 +7,13 @@ from .forms import CaseForm
 # List all cases
 def list_cases(request):
     cases = Case.objects.all()
-    return render(request, 'cases/list.html', {'cases': cases})
+    return render(request, 'cases/cases_list.html', {'cases': cases})
+
+
+# Detail view for a specific case
+def detail_case(request, case_id):
+    case = get_object_or_404(Case, id=case_id)
+    return render(request, 'cases/case_detail.html', {'case': case})
 
 
 # Add a new case
@@ -19,7 +25,7 @@ def add_case(request):
             return redirect('list_cases')
     else:
         form = CaseForm()
-    return render(request, 'cases/form.html', {'form': form})
+    return render(request, 'cases/cases_form.html', {'form': form})
 
 
 # Update a case
@@ -32,7 +38,7 @@ def update_case(request, case_id):
             return redirect('list_cases')
     else:
         form = CaseForm(instance=case)
-    return render(request, 'cases/form.html', {'form': form})
+    return render(request, 'cases/cases_form.html', {'form': form})
 
 
 # Delete a case

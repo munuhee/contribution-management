@@ -15,7 +15,7 @@ class Transaction(models.Model):
     def save(self, *args, **kwargs):
         if not self.reference:
             self.reference = self.generate_reference()
-        super(Transaction, self).save(*args, **kwargs)
+        super(Transaction, self).save(*args, **kwargs)  # This line is correct
 
     def generate_reference(self):
         random_suffix = ''.join(
@@ -37,7 +37,7 @@ class UnmatchedTransactions(models.Model):
     def save(self, *args, **kwargs):
         if not self.reference:
             self.reference = self.generate_reference()
-        super(Transaction, self).save(*args, **kwargs)
+        super(UnmatchedTransactions, self).save(*args, **kwargs)
 
     def generate_reference(self):
         random_suffix = ''.join(
