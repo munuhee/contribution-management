@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Transaction
 from .forms import TransactionForm
 
 
 # List all transactions
+@login_required
 def list_transactions(request):
     transactions = Transaction.objects.all()
     return render(
@@ -14,6 +16,7 @@ def list_transactions(request):
 
 
 # Add a new transaction
+@login_required
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
@@ -28,6 +31,7 @@ def add_transaction(request):
 
 
 # Update a transaction
+@login_required
 def update_transaction(request, transaction_id):
     transaction = get_object_or_404(Transaction, id=transaction_id)
     if request.method == 'POST':
@@ -43,6 +47,7 @@ def update_transaction(request, transaction_id):
 
 
 # Delete a transaction
+@login_required
 def delete_transaction(request, transaction_id):
     transaction = get_object_or_404(Transaction, id=transaction_id)
     transaction.delete()

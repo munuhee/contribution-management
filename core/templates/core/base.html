@@ -61,9 +61,9 @@
         <hr />
         <footer class="sidebar-footer p-3 mt-auto">
           <div class="d-flex justify-content-center mb-2">
-            <button id="logout-btn" type="submit" class="btn btn-outline-danger w-100 text-white nav-link">
+            <a href="{% url 'logout' %}" id="logout-btn" type="submit" class="btn btn-outline-danger w-100 text-white nav-link">
               <i class="bi bi-box-arrow-left"></i> Logout
-            </button>
+            </a>
           </div>
           <p class="text-center mb-0">© 2024 Your Company</p>
           <p class="text-center mb-0">Privacy Policy</p>
@@ -134,8 +134,24 @@
         </section>
       </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <!-- Include Bootstrap's JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-rbsA2mE7MvlU8O2D6WvW8fJ4OMwF2D7xocjBf8V8wXgh0C8kFZj5QNB2vN6lGeI7p" crossorigin="anonymous"></script>
     <script src="{% load static %}{% static 'js/main.js' %}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}',
+                    title: '{{ message }}',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            {% endfor %}
+        {% endif %}
+    });
+    </script>
   </body>
 </html>

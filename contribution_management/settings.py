@@ -64,6 +64,10 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+LOGIN_REDIRECT_URL = 'dashboard_view'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
+
 ROOT_URLCONF = 'contribution_management.urls'
 
 TEMPLATES = [

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.contrib import messages
 from .models import Member
@@ -8,11 +9,13 @@ from .forms import MemberForm
 
 
 # List all members
+@login_required
 def list_members(request):
     members = Member.objects.all()
     return render(request, 'members/members_list.html', {'members': members})
 
 
+@login_required
 def member_detail(request, member_id):
     member = get_object_or_404(Member, id=member_id)
 
@@ -44,6 +47,7 @@ def member_detail(request, member_id):
 
 
 # Add a new member
+@login_required
 def add_member(request):
     if request.method == 'POST':
         form = MemberForm(request.POST)
@@ -66,6 +70,7 @@ def add_member(request):
 
 
 # Update a member
+@login_required
 def update_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     if request.method == 'POST':
@@ -89,6 +94,7 @@ def update_member(request, member_id):
 
 
 # Delete a member
+@login_required
 def delete_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     member_name = f"{member.first_name} {member.last_name}"

@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Penalty
 from .forms import PenaltyForm
 
 
 # List all penalties
+@login_required
 def list_penalties(request):
     penalties = Penalty.objects.all()
     return render(
@@ -13,6 +15,7 @@ def list_penalties(request):
 
 
 # Add a new penalty
+@login_required
 def add_penalty(request):
     if request.method == 'POST':
         form = PenaltyForm(request.POST)
@@ -26,6 +29,7 @@ def add_penalty(request):
 
 
 # Update a penalty
+@login_required
 def update_penalty(request, penalty_id):
     penalty = get_object_or_404(Penalty, id=penalty_id)
     if request.method == 'POST':
@@ -40,6 +44,7 @@ def update_penalty(request, penalty_id):
 
 
 # Delete a penalty
+@login_required
 def delete_penalty(request, penalty_id):
     penalty = get_object_or_404(Penalty, id=penalty_id)
     penalty.delete()

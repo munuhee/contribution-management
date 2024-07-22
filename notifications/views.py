@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .forms import SendBulkSMSForm
 from .sms_utils import send_sms
 from .models import SentMessage
 from members.models import Member
 
 
+@login_required
 def send_bulk_sms(request):
     if request.method == 'POST':
         form = SendBulkSMSForm(request.POST)
@@ -40,6 +42,7 @@ def send_bulk_sms(request):
     return render(request, 'notifications/send_bulk_sms.html', {'form': form})
 
 
+@login_required
 def list_sent_messages(request):
     messages_list = SentMessage.objects.all().order_by('-sent_at')
     return render(
