@@ -11,22 +11,57 @@
                     <h2 class="mb-4 text-center">{% if form.instance.pk %}Update Case{% else %}Add Case{% endif %}</h2>
                     <form method="POST">
                         {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="mb-0">
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
                         <div class="form-group mb-3">
                             {{ form.case_number.label_tag }}
+                            {% if form.case_number.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.case_number.errors }}
+                            </div>
+                            {% endif %}
                             {{ form.case_number }}
                         </div>
+
                         <div class="form-group mb-3">
                             {{ form.amount.label_tag }}
+                            {% if form.amount.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.amount.errors }}
+                            </div>
+                            {% endif %}
                             {{ form.amount }}
                         </div>
+
                         <div class="form-group mb-3">
                             {{ form.description.label_tag }}
+                            {% if form.description.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
                             {{ form.description }}
                         </div>
+
                         <div class="form-group mb-3">
                             {{ form.deadline.label_tag }}
+                            {% if form.deadline.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.deadline.errors }}
+                            </div>
+                            {% endif %}
                             {{ form.deadline }}
                         </div>
+
                         <button type="submit" class="btn btn-primary btn-lg">
                             {% if form.instance.pk %}Update{% else %}Add{% endif %}
                         </button>
