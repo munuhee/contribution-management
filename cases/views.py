@@ -4,17 +4,20 @@ from django.contrib import messages
 from .models import Case
 from .forms import CaseForm
 
+
 # List all cases
 @login_required
 def list_cases(request):
     cases = Case.objects.all()
     return render(request, 'cases/cases_list.html', {'cases': cases})
 
+
 # Detail view for a specific case
 @login_required
 def detail_case(request, case_id):
     case = get_object_or_404(Case, id=case_id)
     return render(request, 'cases/case_detail.html', {'case': case})
+
 
 # Add a new case
 @login_required
@@ -31,6 +34,7 @@ def add_case(request):
         form = CaseForm()
     return render(request, 'cases/cases_form.html', {'form': form})
 
+
 # Update a case
 @login_required
 def update_case(request, case_id):
@@ -46,6 +50,7 @@ def update_case(request, case_id):
     else:
         form = CaseForm(instance=case)
     return render(request, 'cases/cases_form.html', {'form': form})
+
 
 # Delete a case
 @login_required
