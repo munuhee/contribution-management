@@ -117,17 +117,6 @@
               </div>
             </div>
           </nav>
-          {% if messages %}
-            <div class="alert-container px-3 pt-2">
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                  <i class="uil uil-{{ message.tags }} me-2"></i>
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
           {% block content %}
           <!-- Content goes here -->
           {% endblock %}
