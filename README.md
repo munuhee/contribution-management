@@ -1,5 +1,3 @@
-Here is the updated documentation including the crontab configuration:
-
 # Contribution Management App
 
 ## Overview
