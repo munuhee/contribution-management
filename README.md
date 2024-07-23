@@ -1,3 +1,5 @@
+Here is the updated documentation including the crontab configuration:
+
 # Contribution Management App
 
 ## Overview
@@ -12,6 +14,7 @@ The Contribution Management App is designed to manage contributions among member
 - **Mpesa Integration**: Handle offline payments through Safaricom's C2B API.
 - **SMS Notifications**: Notify members of updates and payment confirmations using Africa's Talking API.
 - **Unit Testing**: Comprehensive tests for edge cases and functionality.
+- **Automatic Penalty Deduction**: Automatically deduct penalties from a member's account when an invoice's due date passes without payment.
 
 ## Technologies Used
 
@@ -30,7 +33,7 @@ The Contribution Management App is designed to manage contributions among member
 - pip
 - PostgreSQL
 
-### Steps
+### Setup
 
 1. **Clone the repository**:
    ```bash
@@ -49,38 +52,14 @@ The Contribution Management App is designed to manage contributions among member
    pip install -r requirements.txt
    ```
 
-4. **Set up the database**:
-   - Create a PostgreSQL database and update the `settings.py` with your database configuration.
-
-5. **Run migrations**:
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Create a superuser**:
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. **Run the server**:
-   ```bash
-   python manage.py runserver
-   ```
-
-## Setup
-
-1. **Register an Account on Africa's Talking:**
-
+4. **Register an Account on Africa's Talking**:
    Visit [Africa's Talking](https://africastalking.com/) to create an account. You'll need to obtain your API credentials, including the username and API key, which are essential for configuring your application.
 
-2. **Register an Account on Safaricom's Developer Portal:**
-
+5. **Register an Account on Safaricom's Developer Portal**:
    Go to the [Safaricom Developer Portal](https://developer.safaricom.co.ke/) and sign up for an account. After registering, you'll receive credentials, including the API key and secret, required for integrating Mpesa services.
 
-These credentials will be used for configuring your application.
-
-1. **Environment Configuration:**
-   - Create a `.env` file in the root directory of your Flask project.
+6. **Environment Configuration**:
+   - Create a `.env` file in the root directory of your Django project.
    - Add the following credentials to your `.env` file:
 
      ```bash
@@ -98,39 +77,66 @@ These credentials will be used for configuring your application.
      MPESA_SHORTCODE= # your short code (Business Number)
      CONFIRMATION_URL= # yourdomain.com/mpesa/confirmation/
      VALIDATION_URL= # yourdomain.com/mpesa/validation/
-
      ```
 
-## Register URLs
+7. **Set up the database**:
+   - Create a PostgreSQL database and update the `settings.py` with your database configuration.
 
-To register the Validation and Confirmation URLs with M-Pesa, run the following command:
+8. **Run migrations**:
+   ```bash
+   python manage.py migrate
+   ```
 
-```bash
-python manage.py register_urls
-```
+9. **Create a superuser**:
+    ```bash
+    python manage.py createsuperuser
+    ```
 
-**Note:**
+10. **Register URLs**:
+    To register the Validation and Confirmation URLs with M-Pesa, run the following command:
 
-- **Sandbox Environment:** You can register and update your URLs as needed. Feel free to overwrite existing URLs if necessary.
+    ```bash
+    python manage.py register_urls
+    ```
 
-- **Production Environment:** URL registration is a one-time process. If you need to change your URLs, you must delete the existing ones from the URL Management tab under Self-Service and then re-register using the `register_urls` command. For further assistance, you can also contact support at [apisupport@safaricom.co.ke](mailto:apisupport@safaricom.co.ke).
+    **Note**:
+    - **Sandbox Environment**: You can register and update your URLs as needed. Feel free to overwrite existing URLs if necessary.
+    - **Production Environment**: URL registration is a one-time process. If you need to change your URLs, you must delete the existing ones from the URL Management tab under Self-Service and then re-register using the `register_urls` command. For further assistance, you can also contact support at [apisupport@safaricom.co.ke](mailto:apisupport@safaricom.co.ke).
 
-After running the command, if the URLs are successfully registered, you will see a byte string similar to this in your terminal:
+    After running the command, if the URLs are successfully registered, you will see a byte string similar to this in your terminal:
 
-```bash
-b'{"OriginatorCoversationID": "7619-37765134-1", "ResponseCode": "0", "ResponseDescription": "success"}'
-```
+    ```bash
+    b'{"OriginatorCoversationID": "7619-37765134-1", "ResponseCode": "0", "ResponseDescription": "success"}'
+    ```
 
-This indicates that the URLs have been registered successfully.
+    This indicates that the URLs have been registered successfully.
 
+11. **Configure the Cron Job for Automatic Penalty Deduction**:
+    - Open the crontab editor on your server:
+      ```bash
+      crontab -e
+      ```
+    - Add the following line to run the command daily at midnight:
+      ```bash
+      0 0 * * * /bin/bash -c 'source /path/to/your/virtualenv/bin/activate && cd /path/to/your/project && python manage.py apply_penalties'
+      ```
+      Explanation:
+      - `/bin/bash -c` ensures the command is run in a shell.
+      - `source /path/to/your/virtualenv/bin/activate` activates your virtual environment.
+      - `cd /path/to/your/project` navigates to your project directory.
+      - `python manage.py apply_penalties` runs the Django management command to apply penalties.
+
+12. **Run the server**:
+    ```bash
+    python manage.py runserver
+    ```
 
 ## Running Tests
 
 To run tests, use the following command:
 ```bash
-python run_tests.py
+python manage.py test
 ```
-
 
 ## Continuous Integration
 
@@ -144,7 +150,7 @@ The app will handle incoming payment notifications from Mpesa through the Callba
 
 ### SMS Notifications
 
-The app has sms sending logic handled using Africa's Talking API.
+The app has SMS sending logic handled using Africa's Talking API.
 
 ## Contributing
 
