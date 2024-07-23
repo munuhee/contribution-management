@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from members.models import Member
+from transactions.models import Invoice
 from .models import Case
 from .forms import CaseForm
 
@@ -19,14 +21,35 @@ def detail_case(request, case_id):
     return render(request, 'cases/case_detail.html', {'case': case})
 
 
-# Add a new case
 @login_required
 def add_case(request):
     if request.method == 'POST':
         form = CaseForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Case added successfully!')
+            case = form.save()
+            members = Member.objects.all()
+            for member in members:
+                # Create invoice
+                invoice = Invoice.objects.create(
+                    invoice_number=f"INV{case.case_number}{member.member_number}",
+                    member=member,
+                    case=case,
+                    due_date=case.deadline,
+                    amount=case.amount,
+                    description=f"Invoice for case {case.case_number}"
+                )
+                # Attempt to settle the invoice
+                if member.settle_invoice(invoice):
+                    messages.success(
+                        request,
+                        f"Invoice for member {member.first_name} {member.last_name} settled using account balance."
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        f"Invoice for member {member.first_name} {member.last_name} created but not settled due to insufficient balance."
+                    )
+            messages.success(request, 'Case added and invoices generated successfully!')
             return redirect('list_cases')
         else:
             messages.error(request, 'Please correct the errors below.')

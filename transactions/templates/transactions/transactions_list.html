@@ -14,9 +14,10 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Transaction Ref</th>
-                    <th scope="col">Mpesa Ref</th>
+                    <th scope="col">Trans ID</th>
                     <th scope="col">Member</th>
                     <th scope="col">Amount</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Date</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -29,6 +30,7 @@
                     <td>{{ transaction.trans_id }}</td>
                     <td>{{ transaction.member }}</td>
                     <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.transaction_type }}</td>
                     <td>{{ transaction.date }}</td>
                     <td>
                         <a href="{% url 'update_transaction' transaction.id %}" class="btn btn-warning btn-sm me-1">Edit</a>
