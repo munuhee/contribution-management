@@ -1,6 +1,6 @@
 from django.db import models
+from django.apps import apps
 from transactions.models import Transaction
-from penalties.models import Penalty
 
 
 class Member(models.Model):
@@ -40,6 +40,7 @@ class Member(models.Model):
             return False
 
     def apply_penalty(self, invoice):
+        Penalty = apps.get_model('penalties', 'Penalty')
         penalty_amount = invoice.amount * 0.10
         self.account_balance -= penalty_amount
         self.save()
