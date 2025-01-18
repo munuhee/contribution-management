@@ -1,185 +1,215 @@
-{% extends 'core/base.html' %}
+{% extends 'core/base.html' %}t
+{% load static %}
 {% block content %}
-  <div class="container mt-5">
-    <!-- Display Messages -->
-    {% if messages %}
-      <div class="alert-container position-fixed top-0 end-0 p-3">
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            <i class="uil uil-{{ message.tags }} me-2"></i> {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-      <h2 class="mb-0">
-        <i class="uil uil-user-circle fs-2 me-2 text-primary"></i> Member Dashboard
-      </h2>
-      <div class="d-flex gap-2">
-        <a href="{% url 'update_member' member.id %}" class="btn btn-primary d-inline-flex align-items-center shadow-lg rounded-pill">
-          <i class="uil uil-edit me-2"></i> Edit Profile
-        </a>
-        <a href="{% url 'delete_member' member.id %}" class="btn btn-danger d-inline-flex align-items-center shadow-lg rounded-pill" onclick="return confirm('Are you sure you want to delete this member?');">
-          <i class="uil uil-trash me-2"></i> Delete Account
-        </a>
-      </div>
+<div class="container mx-auto mt-8 px-4">
+  <!-- Display Messages -->
+  {% if messages %}
+  <div class="alert-container fixed top-0 right-0 p-4 z-50">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+      <i class="uil uil-{{ message.tags }} mr-2 text-lg"></i> {{ message }}
+      <button type="button" class="btn-close text-xl" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <!-- Member Information and Account Balance -->
-    <div class="row mb-4 p-4">
-      <!-- Member Information Card -->
-      <div class="col-lg-6 mb-4">
-        <div class="card shadow-lg border-0 rounded-4">
-          <div class="card-header bg-primary text-white d-flex align-items-center">
-            <i class="uil uil-info-circle fs-4 me-2"></i>
-            <h5 class="mb-0">Member Information</h5>
-          </div>
-          <div class="card-body">
-            <ul class="list-unstyled">
-              <li class="d-flex align-items-center mb-3">
-                <i class="uil uil-user fs-4 me-2 text-primary"></i>
-                <strong class="text-muted">Full Name:</strong> <span class="text-dark">{{ member.first_name }} {{ member.last_name }}</span>
-              </li>
-              <li class="d-flex align-items-center mb-3">
-                <i class="uil uil-phone fs-4 me-2 text-primary"></i>
-                <strong class="text-muted">Phone Number:</strong> <span class="text-dark">{{ member.phone_number }}</span>
-              </li>
-              <li class="d-flex align-items-center mb-3">
-                <i class="uil uil-id-card fs-4 me-2 text-primary"></i>
-                <strong class="text-muted">Member Number:</strong> <span class="text-dark">{{ member.member_number }}</span>
-              </li>
-              <li class="d-flex align-items-center mb-3">
-                <i class="uil uil-card-id fs-4 me-2 text-primary"></i>
-                <strong class="text-muted">National ID:</strong> <span class="text-dark">{{ member.national_id_number }}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold text-gray-500">
+      <i class="uil uil-user-circle text-primary mr-2 text-xl"></i> Member Dashboard
+    </h2>
+    <div class="flex gap-4 text-sm">
+      <a href="{% url 'update_member' member.id %}"
+        class="bg-blue-400 hover:bg-blue-600 text-white flex items-center space-x-2 rounded-lg p-2 transition transform hover:scale-105">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+        </svg>
+        <span>Edit Account</span>
+      </a>
+      <a href="{% url 'delete_member' member.id %}"
+        class="bg-red-400 hover:bg-red-600 text-white flex items-center space-x-2 rounded-lg p-2 transition transform hover:scale-105"
+        onclick="return confirm('Are you sure you want to delete this member?');">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+        </svg>
+        <span>Delete Account</span>
+      </a>
+    </div>
+  </div>
 
-      <!-- Account Balance and Penalty Balance Card -->
-      <div class="col-lg-6 mb-4">
-        <div class="card shadow-lg border-0 rounded-4 bg-gradient-light p-3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-4">
-              <!-- Account Balance Circle -->
-              <div class="text-center">
-                <h5 class="card-title mb-4 text-primary">
-                  <i class="uil uil-wallet fs-3"></i> Account Balance
-                </h5>
-                <div class="circle-container">
-                  <div class="circle bg-primary text-white">
-                    KES {{ member.account_balance|floatformat:2 }}
-                  </div>
-                </div>
+  <!-- Member Information and Account Balance -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="card">
+      <div
+        class="w-96 h-56 m-auto bg-red-100 rounded-xl relative text-white transition-transform transform hover:scale-110">
+
+        <img class="relative object-cover w-full h-full rounded-xl" src="https://i.imgur.com/kGkSg1v.png">
+
+        <div class="w-full px-8 absolute top-8">
+          <div class="flex justify-between">
+            <div class="">
+              <p class="font-light">
+                Name
+                </h1>
+              <p class="font-medium text-sm tracking-widest">
+                {{ member.first_name }} {{ member.last_name }}
+              </p>
+            </div>
+            <img class="w-16 h-16" src="{% static 'images/white_logo.png' %}" alt="logo" />
+          </div>
+          <div class="pt-1">
+            <p class="font-light">
+              Member Number
+              </h1>
+            <p class="font-medium text-sm tracking-more-wider">
+              {{ member.member_number }}
+            </p>
+          </div>
+          <div class="pt-6 pr-6">
+            <div class="flex justify-between">
+              <div class="">
+                <p class="font-light text-xs">
+                  Phone
+                  </h1>
+                <p class="font-medium tracking-wider text-sm">
+                  {{ member.phone_number }}
+                </p>
               </div>
-              <!-- Penalty Balance Circle -->
-              <div class="text-center">
-                <h5 class="card-title mb-4 text-danger">
-                  <i class="uil uil-exclamation-triangle fs-3"></i> Penalty Balance
-                </h5>
-                <div class="circle-container">
-                  <div class="circle bg-danger text-white">
-                    KES {{ penalty_balance|floatformat:2 }}
-                  </div>
-                </div>
+              <div class="">
+                <p class="font-light text-xs text-xs">
+                  Balance
+                  </h1>
+                <p class="font-medium tracking-wider text-sm">
+                  KSh {{ member.account_balance|floatformat:2 }}
+                </p>
+              </div>
+
+              <div class="">
+                <p class="font-light text-xs">
+                  Penalties
+                  </h1>
+                <p class="font-bold tracking-more-wider text-sm">
+                  KES {{ member.penalty_balance|floatformat:2 }}
+                </p>
               </div>
             </div>
-            <div class="d-flex justify-content-between mt-4">
-              <button class="btn btn-success btn-sm rounded-pill shadow-lg">
-                <i class="uil uil-sync me-2"></i> Refresh
-              </button>
-            </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Transactions and Penalties Summary -->
-    <div class="row">
-      <!-- Transactions Summary -->
-      <div class="col-lg-6 mb-4">
-        <div class="card shadow-lg border-0 rounded-4">
-          <div class="card-header bg-success text-white d-flex align-items-center">
-            <i class="uil uil-credit-card fs-4 me-2"></i>
-            <h5 class="mb-0">Transaction History</h5>
-          </div>
-          <div class="card-body">
-            <p><strong><i class="uil uil-money-bill fs-4 me-2"></i> Total Transactions:</strong> <span class="text-success">KSh {{ total_transactions|floatformat:2 }}</span></p>
-            {% if transactions %}
-              <table class="table table-hover table-bordered">
-                <thead>
-                  <tr class="bg-light">
-                    <th scope="col">Reference</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for transaction in transactions %}
-                    <tr>
-                      <td>{{ transaction.reference }}</td>
-                      <td>{{ transaction.phone_number }}</td>
-                      <td>KSh {{ transaction.amount|floatformat:2 }}</td>
-                      <td>{{ transaction.date|date:"d/m/Y H:i" }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            {% else %}
-              <p class="text-muted">No transactions found.</p>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-
-      <!-- Penalties Summary -->
-      <div class="col-lg-6">
-        <div class="card shadow-lg border-0 rounded-4">
-          <div class="card-header bg-danger text-white d-flex align-items-center">
-            <i class="uil uil-exclamation-triangle fs-4 me-2"></i>
-            <h5 class="mb-0">Penalty History</h5>
-          </div>
-          <div class="card-body">
-            <p><strong><i class="uil uil-times-circle fs-4 me-2"></i> Penalties Unpaid:</strong> <span class="text-danger">KSh {{ penalties_unpaid|floatformat:2 }}</span></p>
-            <p><strong><i class="uil uil-check-circle fs-4 me-2"></i> Penalties Paid:</strong> <span class="text-success">KSh {{ penalties_paid|floatformat:2 }}</span></p>
-            {% if penalties %}
-              <table class="table table-hover table-bordered">
-                <thead>
-                  <tr class="bg-light">
-                    <th scope="col">Case</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for penalty in penalties %}
-                    <tr>
-                      <td>{{ penalty.case }}</td>
-                      <td>KSh {{ penalty.amount|floatformat:2 }}</td>
-                      <td>{{ penalty.date|date:"d/m/Y H:i" }}</td>
-                      <td>
-                        {% if penalty.is_paid %}
-                          <span class="badge bg-success text-light"><i class="uil uil-check me-1"></i> Paid</span>
-                        {% else %}
-                          <span class="badge bg-warning text-dark"><i class="uil uil-times me-1"></i> Unpaid</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            {% else %}
-              <p class="text-muted">No penalties found.</p>
-            {% endif %}
-          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Transactions and Penalties Summary -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Transactions Summary -->
+    <div class="rounded-xl bg-white border">
+      <div class="flex items-center bg-blue-400 text-white px-4 py-3 rounded-t-xl">
+        <h5 class="text-md font-semibold">Transaction History</h5>
+      </div>
+      <div class="p-4">
+        <p class="text-sm mb-2">
+          <strong>
+            <i class="uil uil-money-bill text-xl mr-2"></i>
+            Total Transactions:
+          </strong>
+          <span class="text-green-500">KSh {{ total_transactions|floatformat:2 }}</span>
+        </p>
+        {% if transactions %}
+        <div class="overflow-auto">
+          <table class="table-auto w-full mt-4 border-collapse text-sm">
+            <thead>
+              <tr class="bg-gray-100 text-gray-700">
+                <th class="px-4 py-2 text-left">Reference</th>
+                <th class="px-4 py-2 text-left">Phone</th>
+                <th class="px-4 py-2 text-left">Amount(KES)</th>
+                <th class="px-4 py-2 text-left">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transaction in transactions %}
+              <tr class="border-t hover:bg-gray-50">
+                <td class="px-4 py-2">{{ transaction.reference }}</td>
+                <td class="px-4 py-2">{{ transaction.phone_number }}</td>
+                <td class="px-4 py-2">{{ transaction.amount|floatformat:2 }}</td>
+                <td class="px-4 py-2">{{ transaction.date|date:"d/m/Y H:i" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500 mt-4">No transactions found.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Penalties Summary -->
+    <div class="rounded-xl bg-white border">
+      <div class="flex items-center bg-red-400 text-white px-4 py-3 rounded-t-xl">
+        <i class="uil uil-exclamation-triangle text-2xl mr-3"></i>
+        <h5 class="text-md font-semibold">Penalty History</h5>
+      </div>
+      <div class="p-4">
+        <p class="text-sm mb-2">
+          <strong>
+            <i class="uil uil-times-circle text-xl mr-2"></i>
+            Penalties Unpaid:
+          </strong>
+          <span class="text-red-500">KSh {{ penalties_unpaid|floatformat:2 }}</span>
+        </p>
+        <p class="text-sm mb-4">
+          <strong>
+            <i class="uil uil-check-circle text-xl mr-2"></i>
+            Penalties Paid:
+          </strong>
+          <span class="text-green-500">KSh {{ penalties_paid|floatformat:2 }}</span>
+        </p>
+        {% if penalties %}
+        <div class="overflow-auto">
+          <table class="table-auto w-full mt-4 border-collapse text-sm">
+            <thead>
+              <tr class="bg-gray-100 text-gray-700">
+                <th class="px-4 py-2 text-left">Case</th>
+                <th class="px-4 py-2 text-left">Amount (KES)</th>
+                <th class="px-4 py-2 text-left">Date</th>
+                <th class="px-4 py-2 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for penalty in penalties %}
+              <tr class="border-t hover:bg-gray-50">
+                <td class="px-4 py-2">{{ penalty.case }}</td>
+                <td class="px-4 py-2">{{ penalty.amount|floatformat:2 }}</td>
+                <td class="px-4 py-2">{{ penalty.date|date:"d/m/Y H:i" }}</td>
+                <td class="px-4 py-2">
+                  {% if penalty.is_paid %}
+                  <span
+                    class="inline-flex items-center px-3 py-1 text-xs font-medium bg-green-500 text-white rounded-full">
+                    <i class="uil uil-check mr-1"></i> Paid
+                  </span>
+                  {% else %}
+                  <span
+                    class="inline-flex items-center px-3 py-1 text-xs font-medium bg-yellow-500 text-black rounded-full">
+                    <i class="uil uil-times mr-1"></i> Unpaid
+                  </span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500 mt-4">No penalties found.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

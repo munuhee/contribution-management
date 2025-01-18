@@ -2,26 +2,27 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Case Details</h1>
+    <h1 class="mb-4 text-3xl font-semibold">Case Details</h1>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title">{{ case.title }}</h5>
+    <div class="bg-white shadow-md rounded-lg">
+        <div class="px-4 py-2 border-b">
+            <h5 class="text-xl font-semibold">{{ case.title }}</h5>
         </div>
-        <div class="card-body">
+        <div class="p-4">
             <p><strong>Description:</strong> {{ case.description }}</p>
             <p><strong>Status:</strong> {{ case.status }}</p>
             <p><strong>Created At:</strong> {{ case.created_at }}</p>
             <p><strong>Updated At:</strong> {{ case.updated_at }}</p>
         </div>
-        <div class="card-footer text-end">
-            <a href="{% url 'update_case' case.id %}" class="btn btn-primary">
+        <div class="px-4 py-2 border-t flex justify-end space-x-2">
+            <a href="{% url 'update_case' case.id %}"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 <i class="uil uil-edit"></i> Edit
             </a>
-            <a href="{% url 'delete_case' case.id %}" class="btn btn-danger">
+            <a href="{% url 'delete_case' case.id %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                 <i class="uil uil-trash-alt"></i> Delete
             </a>
-            <a href="{% url 'list_cases' %}" class="btn btn-secondary">
+            <a href="{% url 'list_cases' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
                 <i class="uil uil-arrow-left"></i> Back to List
             </a>
         </div>

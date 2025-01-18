@@ -4,56 +4,91 @@
 
 {% block content %}
 <div class="container my-5">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="mb-0">Members List</h2>
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h2 class="text-xl font-semibold">Members</h2>
         </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{% url 'add_member' %}" class="btn btn-primary d-inline-flex align-items-center">
-                <i class="uil uil-user-plus me-2"></i> Add Member
-            </a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Member Number</th>
-                            <th>Full Name</th>
-                            <th>Phone Number</th>
-                            <th>Balance</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for member in members %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ member.member_number }}</td>
-                            <td>{{ member.first_name }} {{ member.last_name }}</td>
-                            <td>{{ member.phone_number }}</td>
-                            <td>KSh {{ member.account_balance }}</td>
-                            <td>
-                                <a href="{% url 'update_member' member.id %}" class="btn btn-warning btn-sm d-inline-flex align-items-center me-2">
-                                    <i class="uil uil-edit me-1"></i> Edit
-                                </a>
-                                <a href="{% url 'delete_member' member.id %}" class="btn btn-danger btn-sm d-inline-flex align-items-center" onclick="return confirm('Are you sure you want to delete this member?');">
-                                    <i class="uil uil-trash me-1"></i> Delete
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center">No members found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="flex items-center gap-4">
+            <div class="relative text-gray-600">
+                <input class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                    type="search" name="search" placeholder="Search">
+                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                    <svg class="text-gray-600 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px"
+                        viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
+                        xml:space="preserve" width="512px" height="512px">
+                        <path
+                            d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <a href="{% url 'add_member' %}"
+                    class="btn bg-blue-400 hover:bg-blue-600 text-white text-sm p-2.5 rounded-lg">
+                    Add Member
+                </a>
             </div>
         </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm table-auto border-collapse">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left">#</th>
+                    <th class="px-4 py-2 text-left">Member Number</th>
+                    <th class="px-4 py-2 text-left">Full Name</th>
+                    <th class="px-4 py-2 text-left">Phone Number</th>
+                    <th class="px-4 py-2 text-left">Balance</th>
+                    <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ forloop.counter }}</td>
+                    <td class="px-4 py-2">{{ member.member_number }}</td>
+                    <td class="px-4 py-2">{{ member.first_name }} {{ member.last_name }}</td>
+                    <td class="px-4 py-2">{{ member.phone_number }}</td>
+                    <td class="px-4 py-2">KSh {{ member.account_balance }}</td>
+                    <td class="px-4 py-2">
+                        <a href="{% url 'update_member' member.id %}"
+                            class="text-blue-400 hover:text-blue-600 px-3 py-1 rounded-lg inline-flex items-center mr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
+                        </a>
+                        <a href="{% url 'delete_member' member.id %}"
+                            class="text-red-400 hover:text-red-600 px-3 py-1 rounded-lg inline-flex items-center"
+                            onclick="return confirm('Are you sure you want to delete this member?');">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                            </svg>
+                        </a>
+                        <!-- Add view member link -->
+                        <a href="{% url 'member_detail' member.id %}"
+                            class="text-green-400 hover:text-green-600 px-3 py-1 rounded-lg inline-flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-gray-500">No members found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

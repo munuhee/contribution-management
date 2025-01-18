@@ -3,38 +3,74 @@
 {% block title %}Transactions List{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Transactions List</h2>
-        <a href="{% url 'add_transaction' %}" class="btn btn-primary">Add Transaction</a>
+<div class="container p-5">
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h2 class="text-xl font-semibold">Transactions</h2>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative text-gray-600">
+                <input class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                    type="search" name="search" placeholder="Search">
+                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                    <svg class="text-gray-600 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px"
+                        viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
+                        xml:space="preserve" width="512px" height="512px">
+                        <path
+                            d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <a href="{% url 'add_transaction' %}"
+                    class="btn bg-blue-400 hover:bg-blue-600 text-white text-sm p-2.5 rounded-lg">
+                    Add Transaction
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="thead-dark">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+            <thead class="bg-gray-100 text-left">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Transaction Ref</th>
-                    <th scope="col">Trans ID</th>
-                    <th scope="col">Member</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Actions</th>
+                    <th class="px-4 py-2">#</th>
+                    <th class="px-4 py-2">Transaction Ref</th>
+                    <th class="px-4 py-2">Trans ID</th>
+                    <th class="px-4 py-2">Member</th>
+                    <th class="px-4 py-2">Amount</th>
+                    <th class="px-4 py-2">Type</th>
+                    <th class="px-4 py-2">Date</th>
+                    <th class="px-4 py-2">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for transaction in transactions %}
                 <tr>
-                    <th scope="row">{{ forloop.counter }}</th>
-                    <td>{{ transaction.reference }}</td>
-                    <td>{{ transaction.trans_id }}</td>
-                    <td>{{ transaction.member }}</td>
-                    <td>{{ transaction.amount }}</td>
-                    <td>{{ transaction.transaction_type }}</td>
-                    <td>{{ transaction.date }}</td>
-                    <td>
-                        <a href="{% url 'update_transaction' transaction.id %}" class="btn btn-warning btn-sm me-1">Edit</a>
-                        <a href="{% url 'delete_transaction' transaction.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">Delete</a>
+                    <th class="px-4 py-2">{{ forloop.counter }}</th>
+                    <td class="px-4 py-2">{{ transaction.reference }}</td>
+                    <td class="px-4 py-2">{{ transaction.trans_id }}</td>
+                    <td class="px-4 py-2">{{ transaction.member }}</td>
+                    <td class="px-4 py-2">{{ transaction.amount }}</td>
+                    <td class="px-4 py-2">{{ transaction.transaction_type }}</td>
+                    <td class="px-4 py-2">{{ transaction.date }}</td>
+                    <td class="px-4 py-2 flex space-x-3">
+                        <a href="{% url 'update_transaction' transaction.id %}"
+                            class="text-blue-500 hover:text-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
+                        </a>
+                        <a href="{% url 'delete_transaction' transaction.id %}" class="text-red-500 hover:text-red-700"
+                            onclick="return confirm('Are you sure you want to delete this transaction?');">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </a>
                     </td>
                 </tr>
                 {% empty %}

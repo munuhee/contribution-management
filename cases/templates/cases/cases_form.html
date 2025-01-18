@@ -3,71 +3,87 @@
 {% block title %}{% if form.instance.pk %}Update Case{% else %}Add Case{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container my-5 p-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="mb-4 text-center">{% if form.instance.pk %}Update Case{% else %}Add Case{% endif %}</h2>
-                    <form method="POST">
-                        {% csrf_token %}
+<div class="container mx-auto my-8 px-4">
+    <div class="flex justify-center">
+        <div class="w-full max-w-lg">
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h2 class="text-2xl font-semibold text-center mb-6">
+                    {% if form.instance.pk %}Update Case{% else %}Add Case{% endif %}
+                </h2>
+                <form method="POST">
+                    {% csrf_token %}
 
-                        {% if form.non_field_errors %}
-                        <div class="alert alert-danger" role="alert">
-                            <ul class="mb-0">
-                                {% for error in form.non_field_errors %}
-                                <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
+                    {% if form.non_field_errors %}
+                    <div class="bg-red-100 text-red-800 border border-red-300 rounded-lg p-4 mb-4">
+                        <ul class="list-disc pl-6">
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.case_number.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700">
+                            {{ form.case_number.label }}
+                        </label>
+                        {% if form.case_number.errors %}
+                        <div class="text-sm text-red-600">
+                            {{ form.case_number.errors }}
                         </div>
                         {% endif %}
+                        {{ form.case_number }}
+                    </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.case_number.label_tag }}
-                            {% if form.case_number.errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {{ form.case_number.errors }}
-                            </div>
-                            {% endif %}
-                            {{ form.case_number }}
+                    <div class="mb-4">
+                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.amount.label }}
+                        </label>
+                        {% if form.amount.errors %}
+                        <div class="text-sm text-red-600">
+                            {{ form.amount.errors }}
                         </div>
+                        {% endif %}
+                        {{ form.amount }}
+                    </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.amount.label_tag }}
-                            {% if form.amount.errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {{ form.amount.errors }}
-                            </div>
-                            {% endif %}
-                            {{ form.amount }}
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700">
+                            {{ form.description.label }}
+                        </label>
+                        {% if form.description.errors %}
+                        <div class="text-sm text-red-600">
+                            {{ form.description.errors }}
                         </div>
+                        {% endif %}
+                        {{ form.description }}
+                    </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.description.label_tag }}
-                            {% if form.description.errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {{ form.description.errors }}
-                            </div>
-                            {% endif %}
-                            {{ form.description }}
+                    <div class="mb-4">
+                        <label for="{{ form.deadline.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.deadline.label }}
+                        </label>
+                        {% if form.deadline.errors %}
+                        <div class="text-sm text-red-600">
+                            {{ form.deadline.errors }}
                         </div>
+                        {% endif %}
+                        {{ form.deadline }}
+                    </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.deadline.label_tag }}
-                            {% if form.deadline.errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {{ form.deadline.errors }}
-                            </div>
-                            {% endif %}
-                            {{ form.deadline }}
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg">
+                    <div class="flex items-center justify-between">
+                        <button type="submit"
+                            class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
                             {% if form.instance.pk %}Update{% else %}Add{% endif %}
                         </button>
-                        <a href="{% url 'list_cases' %}" class="btn btn-secondary btn-lg ms-2">Cancel</a>
-                    </form>
-                </div>
+                        <a href="{% url 'list_cases' %}"
+                            class="ml-4 px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

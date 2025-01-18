@@ -1,81 +1,91 @@
 {% extends 'core/base.html' %}
 
 {% block title %}
-    {% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
+{% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="container my-5 p-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            <div class="card shadow-sm border-light">
-                <div class="card-body">
-                    <h2 class="mb-4 text-center">
+<div class="mx-auto p-6">
+    <div class="flex justify-center">
+        <div class="w-full">
+            <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+                <div class="p-6">
+                    <h2 class="mb-6 text-center text-2xl font-semibold">
                         {% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
                     </h2>
                     <form method="POST">
                         {% csrf_token %}
                         {% if form.errors %}
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    {% for field in form %}
-                                        {% for error in field.errors %}
-                                            <li>{{ error }}</li>
-                                        {% endfor %}
-                                    {% endfor %}
-                                    {% for error in form.non_field_errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                        <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+                            <ul class="mb-0">
+                                {% for field in form %}
+                                {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                         {% endif %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
-                                    {{ form.first_name }}
-                                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label for="{{ form.first_name.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.first_name.label }}
+                                </label>
+                                {{ form.first_name }}
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
-                                    {{ form.last_name }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
-                                    {{ form.phone_number }}
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.member_number.id_for_label }}" class="form-label">{{ form.member_number.label }}</label>
-                                    {{ form.member_number }}
-                                </div>
+                            <div class="mb-4">
+                                <label for="{{ form.last_name.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.last_name.label }}
+                                </label>
+                                {{ form.last_name }}
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.national_id_number.id_for_label }}" class="form-label">{{ form.national_id_number.label }}</label>
-                                    {{ form.national_id_number }}
-                                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label for="{{ form.phone_number.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.phone_number.label }}
+                                </label>
+                                {{ form.phone_number }}
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="{{ form.account_balance.id_for_label }}" class="form-label">{{ form.account_balance.label }}</label>
-                                    {{ form.account_balance }}
-                                </div>
+                            <div class="mb-4">
+                                <label for="{{ form.member_number.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.member_number.label }}
+                                </label>
+                                {{ form.member_number }}
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label for="{{ form.national_id_number.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.national_id_number.label }}
+                                </label>
+                                {{ form.national_id_number }}
+                            </div>
+                            <div class="mb-4">
+                                <label for="{{ form.account_balance.id_for_label }}"
+                                    class="block text-sm font-medium text-gray-700">
+                                    {{ form.account_balance.label }}
+                                </label>
+                                {{ form.account_balance }}
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-6">
+                            <button type="submit"
+                                class="bg-blue-600 text-white py-2 px-6 rounded-lg text-lg font-semibold">
                                 {% if form.instance.pk %}Update{% else %}Add{% endif %}
                             </button>
-                            <a href="{% url 'list_members' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                            <a href="{% url 'list_members' %}"
+                                class="bg-gray-600 text-white py-2 px-6 rounded-lg text-lg font-semibold">
+                                Cancel
+                            </a>
                         </div>
                     </form>
                 </div>

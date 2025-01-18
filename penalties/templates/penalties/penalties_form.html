@@ -1,21 +1,32 @@
 {% extends 'core/base.html' %}
 
-{% block title %}{% if form.instance.pk %}Update Penalty{% else %}Add Penalty{% endif %}{% endblock %}
+{% block title %}
+{% if form.instance.pk %}Update Penalty{% else %}Add Penalty{% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="container my-5 p-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="mb-4">{% if form.instance.pk %}Update Penalty{% else %}Add Penalty{% endif %}</h2>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Update{% else %}Add{% endif %}</button>
-                <a href="{% url 'list_penalties' %}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+<div class="mx-auto p-6 max-w-screen-sm">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-bold text-center mb-6 text-gray-800">
+            {% if form.instance.pk %}Update Penalty{% else %}Add Penalty{% endif %}
+        </h2>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="space-y-4">
+                {{ form.as_p }}
+            </div>
+            <div class="flex items-center justify-between mt-6">
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 focus:ring focus:ring-blue-300 focus:outline-none transition duration-150 ease-in-out">
+                    {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                </button>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'list_penalties' %}" class="text-gray-600 hover:text-gray-800 underline">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

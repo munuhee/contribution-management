@@ -1,20 +1,22 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-  <div class="container mt-5">
-    <h2 class="mb-4 text-center text-primary">Send Bulk SMS</h2>
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <form method="post">
-          {% csrf_token %}
-          <div class="form-group">
-            <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
-            {{ form.message|safe }}
-            <small class="form-text text-muted">Enter the message to send to all members.</small>
-          </div>
-          <button type="submit" class="btn btn-primary btn-lg mt-3">Send SMS</button>
-        </form>
-      </div>
+<div class="w-2/3 mx-auto mt-10">
+  <h2 class="text-xl font-semibold text-center text-gray-500 mb-4">Send Bulk SMS</h2>
+  <div class="bg-white shadow-lg rounded-lg">
+    <div class="p-6">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium text-gray-700">Message</label>
+          {{ form.message|safe }}
+          <small class="text-sm text-gray-500">Enter the message to send to all members.</small>
+        </div>
+        <button type="submit" class="w-full bg-blue-500 text-white hover:bg-blue-600 px-6 py-3 rounded-lg text-lg mt-3">
+          Send SMS
+        </button>
+      </form>
     </div>
   </div>
+</div>
 {% endblock %}
