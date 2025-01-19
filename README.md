@@ -80,7 +80,7 @@ The Contribution Management App is designed to manage contributions among member
       # Africa's Talking API credentials
       AFRICA_TALKING_USERNAME= # Your Africa's Talking username
       AFRICA_TALKING_API_KEY= # Your Africa's Talking API key
-      AFRICA_TALKING_API_URL=https://api.sandbox.africastalking.com/version1/messaging (sandbox URL for testing)
+      AFRICA_TALKING_API_URL= # https://api.sandbox.africastalking.com/version1/messaging (sandbox URL for testing)
 
       # Mpesa settings
       MPESA_ENV=sandbox # Environment mode: 'sandbox' for testing, 'production' for live transactions
