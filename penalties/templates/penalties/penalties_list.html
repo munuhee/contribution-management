@@ -41,7 +41,7 @@
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Member Number</th>
                     <th class="px-4 py-2">Case</th>
-                    <th class="px-4 py-2">Amount</th>
+                    <th class="px-4 py-2">Amount(KES)</th>
                     <th class="px-4 py-2">Paid</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
@@ -53,7 +53,7 @@
                     <td class="px-4 py-2">{{ penalty.date }}</td>
                     <td class="px-4 py-2">{{ penalty.member.member_number }}</td>
                     <td class="px-4 py-2">{{ penalty.case.case_number }}</td>
-                    <td class="px-4 py-2">${{ penalty.amount }}</td>
+                    <td class="px-4 py-2">{{ penalty.amount }}</td>
                     <td class="px-4 py-2">
                         {% if penalty.is_paid %}
                         <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">true</span>

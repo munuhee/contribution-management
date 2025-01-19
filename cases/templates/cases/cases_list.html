@@ -80,30 +80,30 @@
         <div class="mt-3 flex flex-col items-center">
             <!-- Show pagination only if total cases exceed the per-page limit -->
             {% if page_obj.paginator.count > 10 %}
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-blue-700">
                 Showing <span class="font-semibold text-gray-900">{{ page_obj.start_index }}</span> to
-                <span class="font-semibold text-gray-900">{{ page_obj.end_index }}</span> of
-                <span class="font-semibold text-gray-900">{{ page_obj.paginator.count }}</span> Entries
+                <span class="font-semibold text-blue-900">{{ page_obj.end_index }}</span> of
+                <span class="font-semibold text-blue-900">{{ page_obj.paginator.count }}</span> Entries
             </span>
             <div class="inline-flex mt-2 xs:mt-0">
                 <!-- Previous Page Link -->
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query|default:'' }}"
-                    class="btn bg-gray-800 text-white px-3 py-1 rounded-s hover:bg-gray-900">
+                    class="btn bg-blue-800 text-white px-3 py-1 rounded-s hover:bg-blue-900">
                     Prev
                 </a>
                 {% else %}
-                <span class="btn bg-gray-300 text-gray-500 px-3 py-1 rounded-s cursor-not-allowed">Prev</span>
+                <span class="btn bg-blue-300 text-blue-500 px-3 py-1 rounded-s cursor-not-allowed">Prev</span>
                 {% endif %}
 
                 <!-- Next Page Link -->
                 {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}&search={{ search_query|default:'' }}"
-                    class="btn bg-gray-800 text-white px-3 py-1 rounded-e hover:bg-gray-900">
+                    class="btn bg-blue-800 text-white px-3 py-1 rounded-e hover:bg-blue-900">
                     Next
                 </a>
                 {% else %}
-                <span class="btn bg-gray-300 text-gray-500 px-3 py-1 rounded-e cursor-not-allowed">Next</span>
+                <span class="btn bg-blue-300 text-blue-500 px-3 py-1 rounded-e cursor-not-allowed">Next</span>
                 {% endif %}
             </div>
             {% endif %}

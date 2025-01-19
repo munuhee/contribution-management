@@ -39,6 +39,10 @@ def dashboard_view(request):
     total_transactions = Transaction.objects.count()
     total_amount = Transaction.objects.aggregate(
         Sum('amount'))['amount__sum'] or 0
+
+    # Format the total_amount to two decimal places
+    total_amount = f"{total_amount:.2f}"
+
     cases = Case.objects.all().order_by('-created_at')[:5]
     total_cases = Case.objects.count()
 

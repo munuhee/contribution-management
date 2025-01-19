@@ -41,6 +41,7 @@ def list_members(request):
         'search_query': query
     })
 
+
 @login_required
 def member_detail(request, member_id):
     member = get_object_or_404(Member, id=member_id)
@@ -48,6 +49,16 @@ def member_detail(request, member_id):
     # Fetch transactions and penalties
     transactions = Transaction.objects.filter(member=member).order_by('-date')
     penalties = Penalty.objects.filter(member=member).order_by('-date')
+
+    # Pagination for transactions
+    transactions_paginator = Paginator(transactions, 5)
+    page_transactions = request.GET.get('page_transactions')
+    transactions_page = transactions_paginator.get_page(page_transactions)
+
+    # Pagination for penalties
+    penalties_paginator = Paginator(penalties, 5)
+    page_penalties = request.GET.get('page_penalties')
+    penalties_page = penalties_paginator.get_page(page_penalties)
 
     # Calculate totals
     total_transactions = transactions.aggregate(
@@ -63,8 +74,8 @@ def member_detail(request, member_id):
 
     context = {
         'member': member,
-        'transactions': transactions,
-        'penalties': penalties,
+        'transactions': transactions_page,
+        'penalties': penalties_page,
         'total_transactions': total_transactions,
         'penalties_paid': penalties_paid,
         'penalties_unpaid': penalties_unpaid,
