@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from decimal import Decimal
 from django.views import View
-from transactions.models import Transaction, UnmatchedTransactions
+from transactions.models import Transaction, UnmatchedTransaction
 from penalties.models import Penalty
 from members.models import Member
 
@@ -84,7 +84,7 @@ class MpesaConfirmationView(View):
 
             # Optionally, send SMS notification here
         except Member.DoesNotExist:
-            UnmatchedTransactions.objects.create(
+            UnmatchedTransaction.objects.create(
                 trans_id=trans_id,
                 amount=trans_amount,
                 phone_number=msisdn,

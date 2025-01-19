@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Invoice, Transaction, UnmatchedTransactions
+from .models import Invoice, Transaction, UnmatchedTransaction
 
 
 class InvoiceAdmin(admin.ModelAdmin):
@@ -46,7 +46,7 @@ class TransactionAdmin(admin.ModelAdmin):
     readonly_fields = ('date',)
 
 
-class UnmatchedTransactionsAdmin(admin.ModelAdmin):
+class UnmatchedTransactionAdmin(admin.ModelAdmin):
     list_display = ('trans_id', 'reference', 'phone_number', 'amount', 'date')
     list_filter = ('date',)
     search_fields = ('trans_id', 'reference', 'phone_number', 'amount')
@@ -66,4 +66,4 @@ class UnmatchedTransactionsAdmin(admin.ModelAdmin):
 
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(Transaction, TransactionAdmin)
-admin.site.register(UnmatchedTransactions, UnmatchedTransactionsAdmin)
+admin.site.register(UnmatchedTransaction, UnmatchedTransactionAdmin)

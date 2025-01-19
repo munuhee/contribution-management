@@ -50,7 +50,7 @@ class Transaction(models.Model):
         return f"{self.reference} - {self.amount}"
 
 
-class UnmatchedTransactions(models.Model):
+class UnmatchedTransaction(models.Model):
     trans_id = models.CharField(max_length=20, blank=True)
     reference = models.CharField(max_length=20, unique=True, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
@@ -60,7 +60,7 @@ class UnmatchedTransactions(models.Model):
     def save(self, *args, **kwargs):
         if not self.reference:
             self.reference = self.generate_reference()
-        super(UnmatchedTransactions, self).save(*args, **kwargs)
+        super(UnmatchedTransaction, self).save(*args, **kwargs)
 
     def generate_reference(self):
         random_suffix = ''.join(
