@@ -77,6 +77,8 @@ def list_transactions(request):
     if query:
         transactions = Transaction.objects.filter(
             Q(member__member_number__icontains=query) |
+            Q(member__first_name__icontains=query) |
+            Q(member__last_name__icontains=query) |
             Q(trans_id__icontains=query) |
             Q(reference__icontains=query) |
             Q(phone_number__icontains=query)
