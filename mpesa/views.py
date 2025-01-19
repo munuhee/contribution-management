@@ -2,8 +2,10 @@
 Handles MPESA payment validation and confirmation in Django.
 
 This module provides views for processing MPESA payment notifications:
-1. `MpesaValidationView`: A placeholder for handling payment validation requests.
-2. `MpesaConfirmationView`: Processes payment confirmations, updates member accounts, and handles penalties.
+1. `MpesaValidationView`: A placeholder for handling payment
+validation requests.
+2. `MpesaConfirmationView`: Processes payment confirmations,
+updates member accounts, and handles penalties.
 
 Key Features:
 - Matches payments to members using the bill reference number.
@@ -29,6 +31,7 @@ from django.views import View
 from transactions.models import Transaction, UnmatchedTransaction
 from penalties.models import Penalty
 from members.models import Member
+from notifications.sms_utils import send_sms
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -66,6 +69,7 @@ class MpesaConfirmationView(View):
                 member_number = bill_ref_number[:-1]
                 member = Member.objects.get(member_number=member_number)
 
+                # Create the transaction
                 Transaction.objects.create(
                     member=member,
                     trans_id=trans_id,
@@ -73,25 +77,39 @@ class MpesaConfirmationView(View):
                     phone_number=msisdn,
                 )
 
-                member.account_balance += trans_amount
-                member.save()
-
                 # Handle the penalty payment
-                penalties = Penalty.objects.filter(
-                    member=member, is_paid=False
-                ).order_by('date')
                 remaining_amount = trans_amount
+                penalties = Penalty.objects.filter(
+                    member=member,
+                    is_paid=False
+                ).order_by('date')
+                total_penalties_paid = 0
 
                 for penalty in penalties:
                     if remaining_amount >= penalty.amount:
                         remaining_amount -= penalty.amount
+                        total_penalties_paid += penalty.amount
                         penalty.is_paid = True
                         penalty.save()
                     else:
-                        penalty.amount -= remaining_amount
-                        penalty.save()
-                        remaining_amount = 0
+                        # Exit loop
+                        # if remaining amount is insufficient for next penalty
                         break
+
+                # If there's remaining amount, update the account balance
+                if remaining_amount > 0:
+                    member.account_balance += remaining_amount
+                    member.save()
+
+                # Send SMS notification for penalty payment
+                message = (
+                    f"Dear {member.first_name}, "
+                    f"your payment of {trans_amount:.2f} "
+                    f"has been successfully received. "
+                    f"Penalties cleared: {total_penalties_paid:.2f}. "
+                    f"Remaining balance: {remaining_amount:.2f}."
+                )
+                send_sms(to=msisdn, message=message)
             else:
                 member = Member.objects.get(member_number=bill_ref_number)
                 Transaction.objects.create(
@@ -104,10 +122,24 @@ class MpesaConfirmationView(View):
                 member.account_balance += trans_amount
                 member.save()
 
-            # Optionally, send SMS notification here
+                # Send SMS notification for account top-up
+                message = (
+                    f"Dear {member.first_name},"
+                    f" your payment of {trans_amount:.2f} "
+                    f"has been successfully received. "
+                    f"Your updated account balance is "
+                    f"{member.account_balance:.2f}."
+                )
+                send_sms(to=msisdn, message=message)
+
         except Member.DoesNotExist:
             UnmatchedTransaction.objects.create(
                 trans_id=trans_id,
                 amount=trans_amount,
                 phone_number=msisdn,
+            )
+            # Optionally send an SMS for unmatched payment
+            send_sms(
+                to=msisdn,
+                message="Your payment could not be matched to any account. Please contact support."
             )
