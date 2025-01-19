@@ -10,8 +10,17 @@ from .forms import CaseForm
 # List all cases
 @login_required
 def list_cases(request):
-    cases = Case.objects.all()
-    return render(request, 'cases/cases_list.html', {'cases': cases})
+    query = request.GET.get('search', '').strip()  # Get the search query from the request
+    if query:
+        # Filter cases based on the query
+        cases = Case.objects.filter(
+            case_number__icontains=query
+        ) | Case.objects.filter(
+            description__icontains=query
+        )
+    else:
+        cases = Case.objects.all()
+    return render(request, 'cases/cases_list.html', {'cases': cases, 'search_query': query})
 
 
 # Detail view for a specific case

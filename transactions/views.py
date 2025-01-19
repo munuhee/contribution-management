@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import Transaction
 from .forms import TransactionForm
 
@@ -7,13 +8,23 @@ from .forms import TransactionForm
 # List all transactions
 @login_required
 def list_transactions(request):
-    transactions = Transaction.objects.all()
+    query = request.GET.get('search', '').strip()
+    if query:
+        # Filter transactions based on the query
+        transactions = Transaction.objects.filter(
+            Q(member__member_number__icontains=query) |
+            Q(trans_id__icontains=query) |
+            Q(reference__icontains=query) |
+            Q(phone_number__icontains=query)
+        )
+    else:
+        transactions = Transaction.objects.all()
+
     return render(
         request,
         'transactions/transactions_list.html',
         {'transactions': transactions}
     )
-
 
 # Add a new transaction
 @login_required

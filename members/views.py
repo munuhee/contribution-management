@@ -8,11 +8,24 @@ from penalties.models import Penalty
 from .forms import MemberForm
 
 
-# List all members
 @login_required
 def list_members(request):
-    members = Member.objects.all()
-    return render(request, 'members/members_list.html', {'members': members})
+    query = request.GET.get('search', '').strip()  # Get the search query from the request
+    if query:
+        # Filter members based on the query
+        members = Member.objects.filter(
+            first_name__icontains=query
+        ) | Member.objects.filter(
+            last_name__icontains=query
+        ) | Member.objects.filter(
+            phone_number__icontains=query
+        ) | Member.objects.filter(
+            member_number__icontains=query
+        )
+    else:
+        members = Member.objects.all()
+    
+    return render(request, 'members/members_list.html', {'members': members, 'search_query': query})
 
 
 @login_required

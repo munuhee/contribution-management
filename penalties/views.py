@@ -1,19 +1,29 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 from .models import Penalty
 from .forms import PenaltyForm
 
 
-# List all penalties
 @login_required
 def list_penalties(request):
-    penalties = Penalty.objects.all()
-    return render(
-        request, 'penalties/penalties_list.html', {'penalties': penalties}
-    )
+    query = request.GET.get('search', '').strip()
+    if query:
+        # Filter penalties based on the query
+        penalties = Penalty.objects.filter(
+            Q(member__member_number__icontains=query) |
+            Q(case__case_number__icontains=query) |
+            Q(amount__icontains=query) |
+            Q(is_paid__icontains=query)
+        )
+    else:
+        penalties = Penalty.objects.all()
 
+    if query.lower() in ['true', 'false']:
+        penalties = penalties | Penalty.objects.filter(is_paid=query.lower() == 'true')
 
+    return render(request, 'penalties/penalties_list.html', {'penalties': penalties, 'search_query': query})
 # Add a new penalty
 @login_required
 def add_penalty(request):
