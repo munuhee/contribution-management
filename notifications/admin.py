@@ -4,8 +4,7 @@ from .models import SentMessage
 
 @admin.register(SentMessage)
 class SentMessageAdmin(admin.ModelAdmin):
-    list_display = ('message', 'sent_at', 'status')
-    list_filter = ('status',)
+    list_display = ('message', 'sent_at',)
     search_fields = ('message',)
     readonly_fields = ('sent_at', 'response')
     ordering = ('-sent_at',)

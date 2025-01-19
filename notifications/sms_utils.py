@@ -24,8 +24,7 @@ from django.conf import settings
 
 
 def send_sms(to, message):
-    url = 'https://api.sandbox.africastalking.com/version1/messaging'
-
+    url = settings.AFRICA_TALKING_API_URL
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'apiKey': settings.AFRICA_TALKING_API_KEY,
@@ -35,7 +34,7 @@ def send_sms(to, message):
         'username': settings.AFRICA_TALKING_USERNAME,
         'to': to,
         'message': message,
-        'from': 'Msingi Bora/Kirathimo',  # Optional
+        'from': 'Msingi Bora/Kirathimo',
     }
 
     response = requests.post(url, headers=headers, data=data)
@@ -43,5 +42,4 @@ def send_sms(to, message):
     if response.status_code == 200:
         return response.json()
     else:
-        # Log the error or raise an exception as needed
         return None

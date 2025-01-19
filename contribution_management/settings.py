@@ -151,6 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 AFRICA_TALKING_USERNAME = os.getenv('AFRICA_TALKING_USERNAME')
 AFRICA_TALKING_API_KEY = os.getenv('AFRICA_TALKING_API_KEY')
+AFRICA_TALKING_API_URL = os.getenv('AFRICA_TALKING_API_URL')
 
 # Mpesa settings
 MPESA_ENV = os.getenv('MPESA_ENV')

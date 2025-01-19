@@ -34,18 +34,15 @@ def send_bulk_sms(request):
                 response = send_sms(member.phone_number, message)
 
                 if response and response.status_code == 200:
-                    status = 'Sent'
                     response_data = response.json()
                 else:
-                    status = 'Failed'
                     response_data = response.json() if response else {}
 
-                # Save the sent message details
-                SentMessage.objects.create(
-                    message=message,
-                    status=status,
-                    response=response_data
-                )
+            # Save the sent message details
+            SentMessage.objects.create(
+                message=message,
+                response=response_data
+            )
 
             messages.success(
                 request, 'SMS messages have been sent successfully.'
@@ -62,9 +59,9 @@ def list_sent_messages(request):
     messages_list = SentMessage.objects.all().order_by('-sent_at')
 
     # Pagination
-    paginator = Paginator(messages_list, 10)  # Show 10 messages per page
-    page_number = request.GET.get('page')  # Get current page number from the URL
-    page_obj = paginator.get_page(page_number)  # Get the current page's messages
+    paginator = Paginator(messages_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
