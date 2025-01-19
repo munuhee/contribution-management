@@ -1,3 +1,17 @@
+"""
+Handles SMS notifications and tracking for the Django application.
+
+This module provides views for sending bulk SMS messages to members and
+viewing the history of sent messages. It integrates with Africa's Talking API
+to send messages and manages message tracking using the `SentMessage` model.
+
+Key Views:
+1. `send_bulk_sms`: Sends a custom message to all members and logs the
+   status of each SMS (sent or failed) in the database.
+2. `list_sent_messages`: Displays a paginated list of all sent messages,
+   including their status and other details.
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -46,12 +60,12 @@ def send_bulk_sms(request):
 @login_required
 def list_sent_messages(request):
     messages_list = SentMessage.objects.all().order_by('-sent_at')
-    
+
     # Pagination
     paginator = Paginator(messages_list, 10)  # Show 10 messages per page
     page_number = request.GET.get('page')  # Get current page number from the URL
     page_obj = paginator.get_page(page_number)  # Get the current page's messages
-    
+
     return render(
         request,
         'notifications/list_sent_messages.html',

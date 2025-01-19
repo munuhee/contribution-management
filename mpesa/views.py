@@ -1,3 +1,25 @@
+"""
+Handles MPESA payment validation and confirmation in Django.
+
+This module provides views for processing MPESA payment notifications:
+1. `MpesaValidationView`: A placeholder for handling payment validation requests.
+2. `MpesaConfirmationView`: Processes payment confirmations, updates member accounts, and handles penalties.
+
+Key Features:
+- Matches payments to members using the bill reference number.
+- Updates member balances and pays off penalties if applicable.
+- Saves unmatched transactions for later review.
+
+Dependencies:
+- CSRF exemption for handling external MPESA requests.
+- Models:
+  - `Transaction` for storing successful payments.
+  - `UnmatchedTransaction` for payments that can’t be matched to a member.
+  - `Penalty` for handling unpaid penalties.
+  - `Member` for managing member accounts.
+
+"""
+
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
