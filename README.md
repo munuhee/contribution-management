@@ -1,5 +1,24 @@
 # Contribution Management App
 
+## Table of Contents
+- [Contribution Management App](#contribution-management-app)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Technologies Used](#technologies-used)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Setup](#setup)
+  - [Running Tests](#running-tests)
+  - [Screenshots](#screenshots)
+  - [Continuous Integration](#continuous-integration)
+  - [API Integration](#api-integration)
+    - [Mpesa Callback URL](#mpesa-callback-url)
+    - [SMS Notifications](#sms-notifications)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Acknowledgments](#acknowledgments)
+
 ## Overview
 
 The Contribution Management App is designed to manage contributions among members in a group. It facilitates case management, transaction recording, and payment processing via Mpesa, along with SMS notifications for members.
@@ -61,20 +80,22 @@ The Contribution Management App is designed to manage contributions among member
    - Add the following credentials to your `.env` file:
 
      ```bash
-     # Django settings
-     SECRET_KEY= #Your django secret_key
+      # Django settings
+      SECRET_KEY= # Your Django secret key (used for cryptographic operations like signing cookies)
 
-     # Africa's Talking API credentials
-     AFRICA_TALKING_USERNAME= #your_username
-     AFRICA_TALKING_API_KEY= #your_api_key
+      # Africa's Talking API credentials
+      AFRICA_TALKING_USERNAME= # Your Africa's Talking username (provided during account creation)
+      AFRICA_TALKING_API_KEY= # Your Africa's Talking API key (used for authenticating API requests)
+      AFRICA_TALKING_API_URL=https://api.sandbox.africastalking.com/version1/messaging # Base URL for the Africa's Talking messaging API (sandbox URL for testing)
 
-     # Mpesa settings
-     MPESA_ENV= # sandbox or live
-     MPESA_CONSUMER_KEY= # your mpesa consumer key
-     MPESA_CONSUMER_SECRET= # your mpesa consumer secret
-     MPESA_SHORTCODE= # your short code (Business Number)
-     CONFIRMATION_URL= # yourdomain.com/mpesa/confirmation/
-     VALIDATION_URL= # yourdomain.com/mpesa/validation/
+      # Mpesa settings
+      MPESA_ENV=sandbox # Environment mode: 'sandbox' for testing, 'production' for live transactions
+      MPESA_CONSUMER_KEY= # Your Mpesa consumer key (provided by Safaricom for accessing the API)
+      MPESA_CONSUMER_SECRET= # Your Mpesa consumer secret (provided by Safaricom for accessing the API)
+      MPESA_SHORTCODE= # Your Mpesa shortcode (assigned by Safaricom to handle payments)
+      CONFIRMATION_URL=yourdomain.com/mpesa/confirmation/ # URL for receiving payment confirmation (to be handled by your server)
+      VALIDATION_URL=yourdomain.com/mpesa/validation/ # URL for receiving payment validation (to be handled by your server)
+
      ```
 
 7. **Set up the database**:
@@ -135,6 +156,23 @@ To run tests, use the following command:
 ```bash
 python manage.py test
 ```
+
+## Screenshots
+
+<details>
+  <summary>Click to view screenshots</summary>
+
+  ![Screenshot 2025-01-19 181803](https://github.com/user-attachments/assets/6b9ce82a-af09-4d34-bd1e-d7b1a974ea7f)
+  ![Screenshot 2025-01-19 181132](https://github.com/user-attachments/assets/d4471948-3e7a-4664-9548-da9e04b7927d)
+  ![Screenshot 2025-01-19 181218](https://github.com/user-attachments/assets/417dcdd3-9353-4589-ba0e-7cecbc7de97d)
+  ![Screenshot 2025-01-19 181635](https://github.com/user-attachments/assets/8c06fa9e-fee3-4183-8f26-60184b6f1bed)
+  ![Screenshot 2025-01-19 181652](https://github.com/user-attachments/assets/3949164d-41f5-43fd-86d1-92c8cc58888f)
+  ![Screenshot 2025-01-19 181711](https://github.com/user-attachments/assets/395ce5c1-bd67-4c98-bcb9-fc3c18673fcd)
+  ![Screenshot 2025-01-19 181731](https://github.com/user-attachments/assets/28ad7385-2363-490f-8d62-0b4780e7887d)
+  ![Screenshot 2025-01-19 181839](https://github.com/user-attachments/assets/2387d5be-87e7-4a1f-b9b9-e107e633065e)
+  ![Screenshot 2025-01-19 181912](https://github.com/user-attachments/assets/3dc4cba0-2cc7-412c-9b42-191df4142e22)
+
+</details>
 
 ## Continuous Integration
 
