@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator
 from members.models import Member
 from transactions.models import Invoice
 from .models import Case
@@ -20,8 +21,16 @@ def list_cases(request):
         )
     else:
         cases = Case.objects.all()
-    return render(request, 'cases/cases_list.html', {'cases': cases, 'search_query': query})
 
+    # Pagination
+    paginator = Paginator(cases, 10)  # Show 10 cases per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'cases/cases_list.html', {
+        'page_obj': page_obj,  # Pass the page object to the template
+        'search_query': query
+    })
 
 # Detail view for a specific case
 @login_required

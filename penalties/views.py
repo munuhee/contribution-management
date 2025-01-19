@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 from .models import Penalty
 from .forms import PenaltyForm
 
@@ -10,7 +11,6 @@ from .forms import PenaltyForm
 def list_penalties(request):
     query = request.GET.get('search', '').strip()
     if query:
-        # Filter penalties based on the query
         penalties = Penalty.objects.filter(
             Q(member__member_number__icontains=query) |
             Q(case__case_number__icontains=query) |
@@ -23,7 +23,13 @@ def list_penalties(request):
     if query.lower() in ['true', 'false']:
         penalties = penalties | Penalty.objects.filter(is_paid=query.lower() == 'true')
 
-    return render(request, 'penalties/penalties_list.html', {'penalties': penalties, 'search_query': query})
+    # Pagination
+    paginator = Paginator(penalties, 10)  # 10 penalties per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'penalties/penalties_list.html', {'penalties': page_obj, 'search_query': query})
+
 # Add a new penalty
 @login_required
 def add_penalty(request):

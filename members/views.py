@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Member
 from transactions.models import Transaction
 from penalties.models import Penalty
@@ -24,9 +25,21 @@ def list_members(request):
         )
     else:
         members = Member.objects.all()
-    
-    return render(request, 'members/members_list.html', {'members': members, 'search_query': query})
 
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(members, 10)
+    try:
+        members = paginator.page(page)
+    except PageNotAnInteger:
+        members = paginator.page(1)
+    except EmptyPage:
+        members = paginator.page(paginator.num_pages)
+
+    return render(request, 'members/members_list.html', {
+        'members': members,
+        'search_query': query
+    })
 
 @login_required
 def member_detail(request, member_id):

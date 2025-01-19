@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import SendBulkSMSForm
 from .sms_utils import send_sms
@@ -45,8 +46,14 @@ def send_bulk_sms(request):
 @login_required
 def list_sent_messages(request):
     messages_list = SentMessage.objects.all().order_by('-sent_at')
+    
+    # Pagination
+    paginator = Paginator(messages_list, 10)  # Show 10 messages per page
+    page_number = request.GET.get('page')  # Get current page number from the URL
+    page_obj = paginator.get_page(page_number)  # Get the current page's messages
+    
     return render(
         request,
         'notifications/list_sent_messages.html',
-        {'messages_list': messages_list}
+        {'page_obj': page_obj}
     )

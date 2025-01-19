@@ -25,10 +25,15 @@
                     </button>
                 </form>
             </div>
-            <div>
+            <div class="flex items-center gap-4">
                 <a href="{% url 'add_transaction' %}"
                     class="btn bg-blue-400 hover:bg-blue-600 text-white text-sm p-2.5 rounded-lg">
                     Add Transaction
+                </a>
+                <!-- Link to unmatched transactions -->
+                <a href="{% url 'unmatched_transactions' %}"
+                    class="btn bg-yellow-400 hover:bg-yellow-600 text-white text-sm p-2.5 rounded-lg">
+                    Unmatched Transactions
                 </a>
             </div>
         </div>
@@ -48,7 +53,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for transaction in transactions %}
+                {% for transaction in page_obj.object_list %}
                 <tr>
                     <th class="px-4 py-2">{{ forloop.counter }}</th>
                     <td class="px-4 py-2">{{ transaction.reference }}</td>
@@ -83,6 +88,55 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="flex flex-col items-center mt-4">
+            <span class="text-sm text-gray-700">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} Entries
+            </span>
+            <div class="inline-flex mt-2 xs:mt-0">
+                {% if page_obj.has_previous %}
+                <a href="?page=1&search={{ search_query }}"
+                    class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 rounded-s hover:bg-blue-900 dark:bg-blue-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 5H1m0 0 4 4M1 5l4-4" />
+                    </svg>
+                    Prev
+                </a>
+                {% else %}
+                <span
+                    class="flex items-center justify-center px-3 h-8 text-sm font-medium text-gray-500 bg-gray-300 rounded-s">
+                    <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 5H1m0 0 4 4M1 5l4-4" />
+                    </svg>
+                    Prev
+                </span>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}"
+                    class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 border-0 border-s border-gray-700 rounded-e hover:bg-blue-900 dark:bg-blue-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    Next
+                    <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M1 5h12m0 0L9 1m4 4L9 9" />
+                    </svg>
+                </a>
+                {% else %}
+                <span
+                    class="flex items-center justify-center px-3 h-8 text-sm font-medium text-gray-500 bg-gray-300 border-0 border-s border-gray-700 rounded-e">
+                    Next
+                    <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M1 5h12m0 0L9 1m4 4L9 9" />
+                    </svg>
+                </span>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

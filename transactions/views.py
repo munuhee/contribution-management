@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.core.paginator import Paginator
 from .models import Transaction
 from .forms import TransactionForm
 
@@ -20,10 +21,15 @@ def list_transactions(request):
     else:
         transactions = Transaction.objects.all()
 
+    # Implement pagination
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         'transactions/transactions_list.html',
-        {'transactions': transactions}
+        {'page_obj': page_obj, 'search_query': query}
     )
 
 # Add a new transaction

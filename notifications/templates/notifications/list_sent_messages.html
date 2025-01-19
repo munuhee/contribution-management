@@ -10,7 +10,7 @@
     </a>
   </div>
 
-  {% for msg in messages_list %}
+  {% for msg in page_obj %}
   <div class="overflow-hidden w-full mt-5 box-border border 
       {% if msg.status == 'Sent' %}
         border-b-4 border-green-500
@@ -18,22 +18,14 @@
         border-b-4 border-yellow-500
       {% endif %}
       rounded-r-md shadow-xl mx-auto">
-    <div class="top {% if msg.status == 'Sent' %}
-          bg-green-500
-        {% else %}
-          bg-yellow-500
-        {% endif %}
-        text-white p-2 px-4 uppercase">
+    <div
+      class="top {% if msg.status == 'Sent' %} bg-green-500 {% else %} bg-yellow-500 {% endif %} text-white p-2 px-4 uppercase">
       <svg class="inline-block w-5 h-5" xmlns="http://www.w3.org/5000/svg" fill="none" viewBox="0 0 24 24"
         stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
       </svg>
-      {% if msg.status == 'Sent' %}
-      Success
-      {% else %}
-      Warning: Not sent
-      {% endif %}
+      {% if msg.status == 'Sent' %} Success {% else %} Warning: Not sent {% endif %}
     </div>
     <div class="center flex box-border px-6 py-4">
       <div class="content">
@@ -47,7 +39,7 @@
           <div class="border-gray-600 rounded text-gray-900 text-base cursor-pointer border p-1 px-3 ml-auto">Cancel
           </div>
           <div
-            class="{% if msg.status == 'Sent' %} border-green-500 bg-green-500 {% else %} border-yellow-500 bg-yellow-500 {% endif %} rounded text-white text-base cursor-pointer border border-b-4 p-1 px-3 font-bold">
+            class="border-b-4 {% if msg.status == 'Sent' %} border-green-500 bg-green-500 {% else %} border-yellow-500 bg-yellow-500 {% endif %} rounded text-white text-base cursor-pointer border p-1 px-3 font-bold">
             <svg class="inline-block w-5 h-5" xmlns="http://www.w3.org/5000/svg" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -61,18 +53,31 @@
   </div>
   {% endfor %}
 
-  {% if messages_list|length == 0 %}
-  <div
-    class="holder overflow-hidden w-4/6 mt-5 box-border border border-b-4 border-gray-600 rounded-r-md shadow-xl mx-auto">
-    <div class="top bg-gray-600 text-white p-2 px-4 uppercase">
-      No Messages
-    </div>
-    <div class="center flex box-border px-6 py-4">
-      <div class="content">
-        You haven't sent any messages yet.
-      </div>
+  {% if page_obj.has_other_pages %}
+  <div class="flex flex-col items-center mt-4">
+    <span class="text-sm text-blue-700 dark:text-gray-400">
+      Showing <span class="font-semibold text-blue-900 dark:text-white">{{ page_obj.start_index }}</span> to
+      <span class="font-semibold text-blue-900 dark:text-white">{{ page_obj.end_index }}</span> of
+      <span class="font-semibold text-blue-900 dark:text-white">{{ page_obj.paginator.count }}</span> Entries
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+      {% if page_obj.has_previous %}
+      <a class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 rounded-s hover:bg-gray-900"
+        href="?page=1">First</a>
+      <a class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 rounded-s hover:bg-gray-900"
+        href="?page={{ page_obj.previous_page_number }}">Prev</a>
+      {% endif %}
+
+      {% if page_obj.has_next %}
+      <a class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900"
+        href="?page={{ page_obj.next_page_number }}">Next</a>
+      <a class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900"
+        href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
     </div>
   </div>
   {% endif %}
+
 </div>
 {% endblock %}
