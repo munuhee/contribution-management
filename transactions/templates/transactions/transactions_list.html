@@ -47,7 +47,7 @@
                     <th class="px-4 py-2">Trans ID</th>
                     <th class="px-4 py-2">Member</th>
                     <th class="px-4 py-2">Amount</th>
-                    <th class="px-4 py-2">Type</th>
+                    <th class="px-4 py-2">Comment</th>
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
@@ -58,9 +58,15 @@
                     <th class="px-4 py-2">{{ forloop.counter }}</th>
                     <td class="px-4 py-2">{{ transaction.reference }}</td>
                     <td class="px-4 py-2">{{ transaction.trans_id }}</td>
-                    <td class="px-4 py-2">{{ transaction.member }}</td>
-                    <td class="px-4 py-2">{{ transaction.amount }}</td>
-                    <td class="px-4 py-2">{{ transaction.transaction_type }}</td>
+                    <td class="px-4 py-2">{{ transaction.member.member_number }}</td>
+                    <td class="px-4 py-2">
+                        {% if transaction.comment == 'Invoice' %}
+                        -{{ transaction.amount }}
+                        {% else %}
+                        {{ transaction.amount }}
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">{{ transaction.comment }}</td>
                     <td class="px-4 py-2">{{ transaction.date }}</td>
                     <td class="px-4 py-2 flex space-x-3">
                         <a href="{% url 'update_transaction' transaction.id %}"

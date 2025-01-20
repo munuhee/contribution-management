@@ -21,14 +21,25 @@ def list_penalties(request):
         penalties = Penalty.objects.all()
 
     if query.lower() in ['true', 'false']:
-        penalties = penalties | Penalty.objects.filter(is_paid=query.lower() == 'true')
+        penalties = penalties | Penalty.objects.filter(
+            is_paid=query.lower() == 'true'
+        )
+
+    # Ensure consistent ordering
+    penalties = penalties.order_by('-date')
 
     # Pagination
-    paginator = Paginator(penalties, 10)  # 10 penalties per page
+    paginator = Paginator(penalties, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'penalties/penalties_list.html', {'penalties': page_obj, 'search_query': query})
+    return render(
+        request,
+        'penalties/penalties_list.html',
+        {'penalties': page_obj,
+         'search_query': query}
+    )
+
 
 # Add a new penalty
 @login_required

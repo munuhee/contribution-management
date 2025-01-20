@@ -26,7 +26,6 @@ class Transaction(models.Model):
     )
     trans_id = models.CharField(max_length=20, blank=True)
     reference = models.CharField(max_length=20, unique=True, blank=True)
-    transaction_type = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
@@ -34,6 +33,7 @@ class Transaction(models.Model):
         Invoice, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='transactions'
     )
+    comment = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if not self.reference:
@@ -56,6 +56,8 @@ class UnmatchedTransaction(models.Model):
     phone_number = models.CharField(max_length=20, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
+    is_settled = models.BooleanField(default=False)
+    comment = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if not self.reference:

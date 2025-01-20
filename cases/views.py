@@ -11,7 +11,7 @@ from .forms import CaseForm
 # List all cases
 @login_required
 def list_cases(request):
-    query = request.GET.get('search', '').strip()  # Get the search query from the request
+    query = request.GET.get('search', '').strip()
     if query:
         # Filter cases based on the query
         cases = Case.objects.filter(
@@ -22,15 +22,19 @@ def list_cases(request):
     else:
         cases = Case.objects.all()
 
+    # Ensure consistent ordering
+    cases = cases.order_by('-created_at')
+
     # Pagination
-    paginator = Paginator(cases, 10)  # Show 10 cases per page
+    paginator = Paginator(cases, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'cases/cases_list.html', {
-        'page_obj': page_obj,  # Pass the page object to the template
+        'page_obj': page_obj,
         'search_query': query
     })
+
 
 # Detail view for a specific case
 @login_required

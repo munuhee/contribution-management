@@ -12,6 +12,7 @@ Key Views:
    including their status and other details.
 """
 
+import logging
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -21,33 +22,82 @@ from .sms_utils import send_sms
 from .models import SentMessage
 from members.models import Member
 
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
 
 @login_required
 def send_bulk_sms(request):
+    """
+    View to send bulk SMS messages to all members.
+    """
     if request.method == 'POST':
         form = SendBulkSMSForm(request.POST)
         if form.is_valid():
             message = form.cleaned_data['message']
             members = Member.objects.all()
+            successful_count = 0
+            failed_count = 0
 
             for member in members:
-                response = send_sms(member.phone_number, message)
+                if not member.phone_number:
+                    logger.warning(f"Member {member.id} has no phone number.")
+                    failed_count += 1
+                    continue
 
-                if response and response.status_code == 200:
-                    response_data = response.json()
-                else:
-                    response_data = response.json() if response else {}
+                try:
+                    response = send_sms(member.phone_number, message)
+                    if response and response.status_code == 200:
+                        response_data = response.json()
+                        logger.info(
+                            f"SMS sent successfully to {member.phone_number}."
+                        )
+                        successful_count += 1
+                    else:
+                        response_data = response.json() if response else {}
+                        logger.error(
+                            f"Failed to send SMS to {member.phone_number}: "
+                            f"{response_data}"
+                        )
+                        failed_count += 1
+                except Exception as e:
+                    logger.exception(
+                        f"Error sending SMS to {member.phone_number}: {e}"
+                    )
+                    failed_count += 1
 
-            # Save the sent message details
-            SentMessage.objects.create(
-                message=message,
-                response=response_data
-            )
+            # Save the message summary in the database
+            try:
+                SentMessage.objects.create(
+                    message=message,
+                    response={
+                        "successful": successful_count,
+                        "failed": failed_count
+                    }
+                )
+                logger.info(
+                    f"Bulk SMS operation completed. "
+                    f"{successful_count} succeeded, {failed_count} failed."
+                )
+            except Exception as e:
+                logger.exception(f"Error saving message details: {e}")
+                messages.error(
+                    request,
+                    "Error saving SMS details. Check logs."
+                )
 
             messages.success(
-                request, 'SMS messages have been sent successfully.'
+                request,
+                f"SMS messages sent. {successful_count}"
+                f" succeeded, {failed_count} failed."
             )
             return redirect('list_sent_messages')
+        else:
+            logger.warning("Invalid form submission.")
     else:
         form = SendBulkSMSForm()
 
@@ -56,6 +106,9 @@ def send_bulk_sms(request):
 
 @login_required
 def list_sent_messages(request):
+    """
+    View to list sent messages with pagination.
+    """
     messages_list = SentMessage.objects.all().order_by('-sent_at')
 
     # Pagination

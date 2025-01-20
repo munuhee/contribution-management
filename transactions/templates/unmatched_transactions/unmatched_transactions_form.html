@@ -25,6 +25,18 @@
                         {{ form.amount }}
                         <p class="text-sm text-gray-500 mt-1">Enter the amount in KES.</p>
                     </div>
+                    <div>
+                        <label for="{{ form.is_settled_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.is_settled.label_tag }}
+                        </label>
+                        {{ form.is_settled }}
+                    </div>
+                    <div>
+                        <label for="{{ form.comment_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.comment.label_tag }}
+                        </label>
+                        {{ form.comment }}
+                    </div>
                     <div class="flex items-center space-x-4">
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                             {% if form.instance.pk %}Update{% else %}Add{% endif %}

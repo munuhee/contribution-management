@@ -19,7 +19,7 @@ class Member(models.Model):
         self.save()
         Transaction.objects.create(
             member=self,
-            transaction_type="Invoice",
+            comment="Invoice",
             amount=invoice.amount,
             trans_id=invoice.invoice_number,
             invoice=invoice
@@ -28,7 +28,7 @@ class Member(models.Model):
         if self.account_balance >= invoice.amount:
             Transaction.objects.create(
                 member=self,
-                transaction_type="Invoice Payment",
+                comment="Invoice Payment",
                 amount=invoice.amount,
                 trans_id=invoice.invoice_number
             )

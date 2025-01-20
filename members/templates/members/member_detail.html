@@ -101,13 +101,13 @@
         <h5 class="text-lg font-semibold">Transaction History</h5>
       </div>
       <div class="p-6">
-        <p class="text-sm mb-4">
+        {% comment %} <p class="text-sm mb-4">
           <strong class="font-semibold">
             <i class="uil uil-money-bill text-xl mr-2"></i>
             Total Transactions:
           </strong>
           <span class="text-green-600">KSh {{ total_transactions|floatformat:2 }}</span>
-        </p>
+        </p> {% endcomment %}
         {% if transactions %}
           <div class="overflow-auto">
             <table class="table-auto w-full mt-4 border-collapse text-sm">
@@ -155,13 +155,13 @@
         <h5 class="text-lg font-semibold">Penalty History</h5>
       </div>
       <div class="p-6">
-        <p class="text-sm mb-4">
+        {% comment %} <p class="text-sm mb-4">
           <strong class="font-semibold">
             <i class="uil uil-times-circle text-xl mr-2"></i>
             Penalties Unpaid:
           </strong>
           <span class="text-red-600">KSh {{ penalties_unpaid|floatformat:2 }}</span>
-        </p>
+        </p> {% endcomment %}
         <p class="text-sm mb-6">
           <strong class="font-semibold">
             <i class="uil uil-check-circle text-xl mr-2"></i>

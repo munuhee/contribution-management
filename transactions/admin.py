@@ -24,17 +24,17 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = (
-        'member', 'trans_id', 'reference', 'transaction_type',
+        'member', 'trans_id', 'reference', 'comment',
         'phone_number', 'amount', 'date', 'invoice'
     )
-    list_filter = ('date', 'member', 'transaction_type', 'invoice')
+    list_filter = ('date', 'member', 'comment', 'invoice')
     search_fields = ('trans_id', 'reference', 'phone_number', 'amount')
     ordering = ('-date',)
     date_hierarchy = 'date'
     fieldsets = (
         (None, {
             'fields': (
-                'member', 'trans_id', 'reference', 'transaction_type',
+                'member', 'trans_id', 'reference', 'comment',
                 'phone_number', 'amount', 'invoice'
             )
         }),

@@ -11,7 +11,7 @@ from .forms import MemberForm
 
 @login_required
 def list_members(request):
-    query = request.GET.get('search', '').strip()  # Get the search query from the request
+    query = request.GET.get('search', '').strip()
     if query:
         # Filter members based on the query
         members = Member.objects.filter(
@@ -25,6 +25,9 @@ def list_members(request):
         )
     else:
         members = Member.objects.all()
+
+    # Ensure consistent ordering
+    members = members.order_by('first_name', 'last_name')
 
     # Pagination
     page = request.GET.get('page', 1)

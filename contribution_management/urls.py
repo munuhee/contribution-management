@@ -23,7 +23,7 @@ urlpatterns = [
     path('members/', include('members.urls')),
     path('cases/', include('cases.urls')),
     path('transactions/', include('transactions.urls')),
-    path('mpesa/', include('mpesa.urls')),
+    path('payments/', include('mpesa.urls')),
     path('notifications/', include('notifications.urls')),
     path('penalties/', include('penalties.urls')),
 ]

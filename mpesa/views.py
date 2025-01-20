@@ -23,6 +23,7 @@ Dependencies:
 """
 
 import json
+import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -32,6 +33,9 @@ from transactions.models import Transaction, UnmatchedTransaction
 from penalties.models import Penalty
 from members.models import Member
 from notifications.sms_utils import send_sms
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -46,6 +50,7 @@ class MpesaConfirmationView(View):
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
+            logger.error("Invalid JSON data received")
             return JsonResponse(
                 {"status": "error", "message": "Invalid JSON data"},
                 status=400
@@ -69,15 +74,20 @@ class MpesaConfirmationView(View):
                 member_number = bill_ref_number[:-1]
                 member = Member.objects.get(member_number=member_number)
 
-                # Create the transaction
+                # Log the transaction creation for penalty payments
+                logger.info(
+                    "Processing penalty payment for member: %s",
+                    member_number
+                )
+
                 Transaction.objects.create(
                     member=member,
                     trans_id=trans_id,
                     amount=trans_amount,
                     phone_number=msisdn,
+                    comment="Penalty Payment",
                 )
 
-                # Handle the penalty payment
                 remaining_amount = trans_amount
                 penalties = Penalty.objects.filter(
                     member=member,
@@ -92,16 +102,17 @@ class MpesaConfirmationView(View):
                         penalty.is_paid = True
                         penalty.save()
                     else:
-                        # Exit loop
-                        # if remaining amount is insufficient for next penalty
                         break
 
-                # If there's remaining amount, update the account balance
+                # Log if there is remaining balance
                 if remaining_amount > 0:
+                    logger.info(
+                        "Remaining amount: %.2f. Updating account balance.",
+                        remaining_amount
+                    )
                     member.account_balance += remaining_amount
                     member.save()
 
-                # Send SMS notification for penalty payment
                 message = (
                     f"Dear {member.first_name}, "
                     f"your payment of {trans_amount:.2f} "
@@ -110,19 +121,26 @@ class MpesaConfirmationView(View):
                     f"Remaining balance: {remaining_amount:.2f}."
                 )
                 send_sms(to=msisdn, message=message)
+
             else:
                 member = Member.objects.get(member_number=bill_ref_number)
+
+                # Log the transaction creation for account top-up
+                logger.info(
+                    "Processing account top-up for member: %s", bill_ref_number
+                )
+
                 Transaction.objects.create(
                     member=member,
                     trans_id=trans_id,
                     amount=trans_amount,
                     phone_number=msisdn,
+                    comment="Account Top-up",
                 )
 
                 member.account_balance += trans_amount
                 member.save()
 
-                # Send SMS notification for account top-up
                 message = (
                     f"Dear {member.first_name},"
                     f" your payment of {trans_amount:.2f} "
@@ -133,13 +151,16 @@ class MpesaConfirmationView(View):
                 send_sms(to=msisdn, message=message)
 
         except Member.DoesNotExist:
+            logger.error(
+                "Member not found for BillRefNumber: %s", bill_ref_number
+            )
             UnmatchedTransaction.objects.create(
                 trans_id=trans_id,
                 amount=trans_amount,
                 phone_number=msisdn,
             )
-            # Optionally send an SMS for unmatched payment
-            send_sms(
-                to=msisdn,
-                message="Your payment could not be matched to any account. Please contact support."
+            message = (
+                "Your payment could not be matched to any account. "
+                "Please contact support for assistance."
             )
+            send_sms(to=msisdn, message=message)
