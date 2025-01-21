@@ -80,6 +80,7 @@ def member_detail(request, member_id):
         'transactions': transactions_page,
         'penalties': penalties_page,
         'total_transactions': total_transactions,
+        'total_penalties': total_penalties,
         'penalties_paid': penalties_paid,
         'penalties_unpaid': penalties_unpaid,
     }

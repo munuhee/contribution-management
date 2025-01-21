@@ -77,14 +77,14 @@
                 </p>
               </div>
 
-              <div class="">
+{% comment %}               <div class="">
                 <p class="font-light text-xs">
                   Penalties
                   </h1>
                 <p class="font-bold tracking-more-wider text-sm">
                   KES {{ member.penalty_balance|floatformat:2 }}
                 </p>
-              </div>
+              </div> {% endcomment %}
             </div>
           </div>
 
@@ -93,21 +93,22 @@
     </div>
   </div>
 
-  <!-- Transactions and Penalties Summary -->
+  {% comment %}
+  <!-- Transactions and Penalties Summary-->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Transactions Summary -->
+
     <div class="rounded-xl bg-white border shadow-lg">
       <div class="flex items-center bg-blue-500 text-white px-6 py-4 rounded-t-xl">
         <h5 class="text-lg font-semibold">Transaction History</h5>
       </div>
       <div class="p-6">
-        {% comment %} <p class="text-sm mb-4">
+        <p class="text-sm mb-4">
           <strong class="font-semibold">
             <i class="uil uil-money-bill text-xl mr-2"></i>
             Total Transactions:
           </strong>
           <span class="text-green-600">KSh {{ total_transactions|floatformat:2 }}</span>
-        </p> {% endcomment %}
+        </p>
         {% if transactions %}
           <div class="overflow-auto">
             <table class="table-auto w-full mt-4 border-collapse text-sm">
@@ -148,20 +149,19 @@
       </div>
     </div>
 
-    <!-- Penalties Summary -->
     <div class="rounded-xl bg-white border shadow-lg">
       <div class="flex items-center bg-red-500 text-white px-6 py-4 rounded-t-xl">
         <i class="uil uil-exclamation-triangle text-2xl mr-4"></i>
         <h5 class="text-lg font-semibold">Penalty History</h5>
       </div>
       <div class="p-6">
-        {% comment %} <p class="text-sm mb-4">
+        <p class="text-sm mb-4">
           <strong class="font-semibold">
             <i class="uil uil-times-circle text-xl mr-2"></i>
             Penalties Unpaid:
           </strong>
           <span class="text-red-600">KSh {{ penalties_unpaid|floatformat:2 }}</span>
-        </p> {% endcomment %}
+        </p>
         <p class="text-sm mb-6">
           <strong class="font-semibold">
             <i class="uil uil-check-circle text-xl mr-2"></i>
@@ -221,6 +221,7 @@
       </div>
     </div>
   </div>
+  {% endcomment %}
 
 </div>
 {% endblock %}

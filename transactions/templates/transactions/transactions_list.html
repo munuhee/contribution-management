@@ -26,6 +26,12 @@
                 </form>
             </div>
             <div class="flex items-center gap-4">
+                <a href="{% url 'export_transactions_pdf' %}?search={{ search_query }}"
+                   class="btn bg-green-400 hover:bg-green-600 text-white text-sm p-2.5 rounded-lg">
+                    Export PDF
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
                 <a href="{% url 'add_transaction' %}"
                     class="btn bg-blue-400 hover:bg-blue-600 text-white text-sm p-2.5 rounded-lg">
                     Add Transaction

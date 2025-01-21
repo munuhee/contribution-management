@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions PDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body {
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+                color: #333;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+                background: none;
+                box-shadow: none;
+            }
+
+            h1 {
+                color:#0004e5;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .logo {
+                width: 120px;
+                height: auto;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th, td {
+                padding: 8px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+            td {
+                font-size: 10px;
+            }
+
+            .highlight-penalty {
+                color: green;
+                font-weight: bold;
+            }
+
+            .no-wrap {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="https://res.cloudinary.com/dxn2oqoxo/image/upload/v1737484295/logo_dvspsq.png" alt="logo" class="logo" />
+            <h1>Transactions Report</h1>
+            <p><strong>Search Query:</strong> {{ query }}</p>
+        </div>
+
+        <!-- Table Section -->
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Transaction Ref</th>
+                    <th>Trans ID</th>
+                    <th>Member</th>
+                    <th>Amount</th>
+                    <th>Comment</th>
+                    <th class="no-wrap">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ transaction.reference }}</td>
+                        <td>{{ transaction.trans_id }}</td>
+                        <td>{{ transaction.member.member_number }}</td>
+                        <td>
+                            {% if transaction.comment == 'Invoice' %}
+                                <span>-{{ transaction.amount }}</span>
+                            {% elif transaction.comment == 'Penalty Payment' %}
+                                <span class="highlight-penalty">{{ transaction.amount }}</span>
+                            {% else %}
+                                {{ transaction.amount }}
+                            {% endif %}
+                        </td>
+                        <td>{{ transaction.comment }}</td>
+                        <td>{{ transaction.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

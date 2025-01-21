@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from django.template.loader import render_to_string
 from .models import Transaction, UnmatchedTransaction
 from .forms import TransactionForm, UnmatchedTransactionForm
 
@@ -150,3 +154,49 @@ def delete_unmatched_transaction(request, pk):
         'unmatched_transactions/unmatched_transaction_delete.html',
         {'transaction': transaction}
     )
+
+
+# Export transactions to PDF
+@login_required
+def export_transactions_pdf(request):
+    query = request.GET.get('search', '').strip()
+    if not query:
+        return HttpResponse(
+            "Search query is required to generate PDF.",
+            status=400
+        )
+
+    transactions = Transaction.objects.filter(
+        Q(member__member_number__icontains=query) |
+        Q(trans_id__icontains=query) |
+        Q(reference__icontains=query) |
+        Q(phone_number__icontains=query)
+    ).order_by('-date')
+
+    if not transactions.exists():
+        return HttpResponse(
+            "No transactions found for the given query.",
+            status=404
+        )
+
+    # Render HTML content
+    context = {'transactions': transactions, 'query': query}
+    html_content = render_to_string(
+        'transactions/transactions_pdf.html',
+        context
+    )
+
+    # Create PDF from HTML
+    response = HttpResponse(content_type='application/pdf')
+    response[
+        'Content-Disposition'
+    ] = f'attachment; filename="{query}_transactions.pdf"'
+
+    # Convert HTML to PDF
+    pisa_status = pisa.CreatePDF(html_content, dest=response)
+
+    # Check if the PDF was successfully created
+    if pisa_status.err:
+        return HttpResponse("Error generating PDF", status=500)
+
+    return response

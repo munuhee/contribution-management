@@ -66,7 +66,7 @@ class MpesaConfirmationView(View):
     def handle_payment(self, data):
         trans_id = data.get("TransID")
         trans_amount = Decimal(data.get("TransAmount", 0))
-        bill_ref_number = data.get("BillRefNumber")
+        bill_ref_number = data.get("BillRefNumber").upper()
         msisdn = data.get("MSISDN")
 
         try:
@@ -78,14 +78,6 @@ class MpesaConfirmationView(View):
                 logger.info(
                     "Processing penalty payment for member: %s",
                     member_number
-                )
-
-                Transaction.objects.create(
-                    member=member,
-                    trans_id=trans_id,
-                    amount=trans_amount,
-                    phone_number=msisdn,
-                    comment="Penalty Payment",
                 )
 
                 remaining_amount = trans_amount
@@ -101,6 +93,14 @@ class MpesaConfirmationView(View):
                         total_penalties_paid += penalty.amount
                         penalty.is_paid = True
                         penalty.save()
+
+                        Transaction.objects.create(
+                            member=member,
+                            trans_id=trans_id,
+                            amount=penalty.amount,
+                            phone_number=msisdn,
+                            comment="Penalty Payment",
+                        )
                     else:
                         break
 
@@ -112,6 +112,13 @@ class MpesaConfirmationView(View):
                     )
                     member.account_balance += remaining_amount
                     member.save()
+                    Transaction.objects.create(
+                        member=member,
+                        trans_id=trans_id,
+                        amount=remaining_amount,
+                        phone_number=msisdn,
+                        comment="Account Top-up",
+                    )
 
                 message = (
                     f"Dear {member.first_name}, "
