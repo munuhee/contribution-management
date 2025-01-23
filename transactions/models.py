@@ -8,7 +8,7 @@ class Invoice(models.Model):
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, blank=True, null=True
     )
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, blank=True)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, blank=True, null=True)
     invoice_number = models.CharField(max_length=100, unique=True)
     issue_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
@@ -21,6 +21,13 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
+    COMMENT_CHOICES = [
+        ('INVOICE_CREATION', 'Invoice Creation'),
+        ('INVOICE_PAYMENT', 'Invoice Payment'),
+        ('PENALTY_PAYMENT', 'Penalty Payment'),
+        ('ACCOUNT_TOPUP', 'Account Top-up'),
+        ('OTHER', 'Other'),
+    ]
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, blank=True, null=True
     )
@@ -33,7 +40,9 @@ class Transaction(models.Model):
         Invoice, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='transactions'
     )
-    comment = models.TextField(blank=True)
+    comment = models.CharField(
+        max_length=20, choices=COMMENT_CHOICES, default='OTHER'
+    )
 
     def save(self, *args, **kwargs):
         if not self.reference:

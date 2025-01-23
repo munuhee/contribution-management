@@ -1,6 +1,4 @@
 from django.db import models
-from django.apps import apps
-from transactions.models import Transaction
 
 
 class Member(models.Model):
@@ -13,40 +11,3 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    def settle_invoice(self, invoice):
-        self.account_balance -= invoice.amount
-        self.save()
-        Transaction.objects.create(
-            member=self,
-            comment="Invoice",
-            amount=invoice.amount,
-            trans_id=invoice.invoice_number,
-            invoice=invoice
-        )
-
-        if self.account_balance >= invoice.amount:
-            Transaction.objects.create(
-                member=self,
-                comment="Invoice Payment",
-                amount=invoice.amount,
-                trans_id=invoice.invoice_number
-            )
-
-            invoice.is_settled = True
-            invoice.save()
-            return True
-        else:
-            return False
-
-    def apply_penalty(self, invoice):
-        Penalty = apps.get_model('penalties', 'Penalty')
-        penalty_amount = invoice.amount * 0.10
-        self.account_balance -= penalty_amount
-        self.save()
-
-        Penalty.objects.create(
-            member=self,
-            case=invoice.case,
-            amount=penalty_amount
-        )

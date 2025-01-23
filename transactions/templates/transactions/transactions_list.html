@@ -53,6 +53,7 @@
                     <th class="px-4 py-2">Trans ID</th>
                     <th class="px-4 py-2">Member</th>
                     <th class="px-4 py-2">Amount</th>
+                    <th class="px-4 py-2">Invoice</th>
                     <th class="px-4 py-2">Comment</th>
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Actions</th>
@@ -72,6 +73,8 @@
                         {{ transaction.amount }}
                         {% endif %}
                     </td>
+                    <td class="px-4 py-2">{% if transaction.invoice.invoice_number %}
+                        {{ transaction.invoice.invoice_number }}{% else %}-{% endif %}</td>
                     <td class="px-4 py-2">{{ transaction.comment }}</td>
                     <td class="px-4 py-2">{{ transaction.date }}</td>
                     <td class="px-4 py-2 flex space-x-3">

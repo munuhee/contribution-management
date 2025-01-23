@@ -29,7 +29,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from decimal import Decimal
 from django.views import View
-from transactions.models import Transaction, UnmatchedTransaction
+from transactions.models import Transaction, UnmatchedTransaction, Invoice
 from penalties.models import Penalty
 from members.models import Member
 from notifications.sms_utils import send_sms
@@ -70,11 +70,12 @@ class MpesaConfirmationView(View):
         msisdn = data.get("MSISDN")
 
         try:
+            member = None
+
             if bill_ref_number.endswith("P"):
+                # Handle payments for penalties
                 member_number = bill_ref_number[:-1]
                 member = Member.objects.get(member_number=member_number)
-
-                # Log the transaction creation for penalty payments
                 logger.info(
                     "Processing penalty payment for member: %s",
                     member_number
@@ -104,62 +105,54 @@ class MpesaConfirmationView(View):
                     else:
                         break
 
-                # Log if there is remaining balance
                 if remaining_amount > 0:
-                    logger.info(
-                        "Remaining amount: %.2f. Updating account balance.",
-                        remaining_amount
+                    # Settle invoices in the correct order
+                    self.settle_invoices(
+                        member,
+                        remaining_amount,
+                        trans_id, msisdn
                     )
-                    member.account_balance += remaining_amount
-                    member.save()
-                    Transaction.objects.create(
-                        member=member,
-                        trans_id=trans_id,
-                        amount=remaining_amount,
-                        phone_number=msisdn,
-                        comment="Account Top-up",
-                    )
-
-                message = (
-                    f"Dear {member.first_name}, "
-                    f"your payment of {trans_amount:.2f} "
-                    f"has been successfully received. "
-                    f"Penalties cleared: {total_penalties_paid:.2f}. "
-                    f"Remaining balance: {remaining_amount:.2f}."
-                )
-                send_sms(to=msisdn, message=message)
-
             else:
+                # Handle payments without "P"
                 member = Member.objects.get(member_number=bill_ref_number)
-
-                # Log the transaction creation for account top-up
                 logger.info(
-                    "Processing account top-up for member: %s", bill_ref_number
+                    "Processing payment for invoices for member: %s",
+                    bill_ref_number
                 )
 
+                # Settle the oldest invoices first
+                remaining_amount = self.settle_invoices(
+                    member,
+                    trans_amount,
+                    trans_id,
+                    msisdn
+                )
+
+            # Update member account balance if there is remaining amount
+            if member and remaining_amount > 0:
+                member.account_balance += remaining_amount
+                member.save()
                 Transaction.objects.create(
                     member=member,
                     trans_id=trans_id,
-                    amount=trans_amount,
+                    amount=remaining_amount,
                     phone_number=msisdn,
                     comment="Account Top-up",
                 )
 
-                member.account_balance += trans_amount
-                member.save()
-
                 message = (
-                    f"Dear {member.first_name},"
-                    f" your payment of {trans_amount:.2f} "
-                    f"has been successfully received. "
-                    f"Your updated account balance is "
-                    f"{member.account_balance:.2f}."
+                    f"Dear {member.first_name}, "
+                    f"your payment of {trans_amount:.2f} has been received. "
+                    f"Your updated account balance is {
+                        member.account_balance:.2f
+                    }."
                 )
                 send_sms(to=msisdn, message=message)
 
         except Member.DoesNotExist:
             logger.error(
-                "Member not found for BillRefNumber: %s", bill_ref_number
+                "Member not found for BillRefNumber: %s",
+                bill_ref_number
             )
             UnmatchedTransaction.objects.create(
                 trans_id=trans_id,
@@ -171,3 +164,29 @@ class MpesaConfirmationView(View):
                 "Please contact support for assistance."
             )
             send_sms(to=msisdn, message=message)
+
+    def settle_invoices(self, member, amount, trans_id, msisdn):
+        """Settle unpaid invoices for a member starting from the oldest."""
+        remaining_amount = amount
+        invoices = Invoice.objects.filter(
+            member=member, is_settled=False
+        ).order_by('issue_date')
+
+        for invoice in invoices:
+            if remaining_amount >= invoice.amount:
+                remaining_amount -= invoice.amount
+                invoice.is_settled = True
+                invoice.save()
+
+                Transaction.objects.create(
+                    member=member,
+                    trans_id=trans_id,
+                    amount=invoice.amount,
+                    invoice=invoice,
+                    phone_number=msisdn,
+                    comment="Invoice Payment",
+                )
+            else:
+                break
+
+        return remaining_amount

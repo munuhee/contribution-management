@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
-from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import render_to_string
-from .models import Transaction, UnmatchedTransaction
+from .models import Transaction, UnmatchedTransaction, Invoice
 from .forms import TransactionForm, UnmatchedTransactionForm
+import uuid
 
 
 # List all transactions
@@ -46,13 +46,73 @@ def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            form.save()
+            transaction = form.save(commit=False)
+            transaction.trans_id = f"TXN-{uuid.uuid4().hex[:4].upper()}"
+            transaction.reference = f"REF-{uuid.uuid4().hex[:4].upper()}"
+
+            # Handling based on the transaction comment type
+            if transaction.comment == 'INVOICE_PAYMENT' and transaction.member:
+                member = transaction.member
+                outstanding_invoices = Invoice.objects.filter(
+                    member=member, is_settled=False
+                ).order_by('issue_date')
+
+                amount_remaining = transaction.amount
+                for invoice in outstanding_invoices:
+                    if amount_remaining <= 0:
+                        break
+
+                    if invoice.amount <= amount_remaining:
+                        # Fully settle the invoice
+                        amount_remaining -= invoice.amount
+                        invoice.is_settled = True
+                        invoice.save()
+
+                        # Create a transaction for the invoice
+                        invoice_transaction = Transaction(
+                            member=member,
+                            amount=invoice.amount,
+                            comment='INVOICE_PAYMENT',
+                            trans_id=invoice.invoice_number,
+                            reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
+                            phone_number="-",
+                            invoice=invoice,
+                        )
+                        invoice_transaction.save()
+                        member.account_balance += invoice.amount
+                        member.save()
+                    else:
+                        # Partially settle the invoice
+                        invoice.amount -= amount_remaining
+                        amount_remaining = 0
+                        invoice.save()
+
+                # Add any remaining amount as a top-up
+                if amount_remaining > 0:
+                    # Add remaining amount to the member's balance
+                    member.account_balance += amount_remaining
+                    member.save()
+
+                    # Create a top-up transaction for the remaining amount
+                    top_up_transaction = Transaction(
+                        member=member,
+                        amount=amount_remaining,
+                        comment='ACCOUNT_TOPUP',
+                        trans_id=f"TXN-{uuid.uuid4().hex[:4].upper()}",
+                        reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
+                        phone_number=member.phone_number,
+                    )
+                    top_up_transaction.save()
+
+                    return redirect('list_transactions')
+
+            # Form is valid, and the transaction has been processed, render the form again
             return redirect('list_transactions')
+
     else:
         form = TransactionForm()
-    return render(
-        request, 'transactions/transactions_form.html', {'form': form}
-    )
+
+    return render(request, 'transactions/transactions_form.html', {'form': form})
 
 
 # Update a transaction

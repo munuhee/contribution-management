@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from members.models import Member
-from transactions.models import Invoice
+from transactions.models import Invoice, Transaction
 from .models import Case
 from .forms import CaseForm
+import uuid
+from datetime import timedelta
+from django.utils.timezone import now
 
 
 # List all cases
@@ -48,36 +51,61 @@ def add_case(request):
     if request.method == 'POST':
         form = CaseForm(request.POST)
         if form.is_valid():
-            case = form.save()
+            # Save the case instance
+            case = form.save(commit=False)
+            case.save()
+
+            # Generate invoices for all members
             members = Member.objects.all()
             for member in members:
-                # Create invoice
                 invoice = Invoice.objects.create(
-                    invoice_number=f"INV{case.case_number}{member.member_number}",
                     member=member,
                     case=case,
+                    invoice_number=f"INV-{case.case_number}-{member.member_number}",
                     due_date=case.deadline,
                     amount=case.amount,
-                    description=f"Invoice for case {case.case_number}"
+                    description=f"Invoice for case {case.case_number}",
                 )
-                # Attempt to settle the invoice
-                if member.settle_invoice(invoice):
-                    messages.success(
-                        request,
-                        f"Invoice for member {member.first_name} {member.last_name} settled using account balance."
+
+                transaction = Transaction.objects.create(
+                    member=member,
+                    amount=case.amount,
+                    comment='INVOICE_CREATION',
+                    trans_id=f"INV-{case.case_number}-{member.member_number}",
+                    reference=f"REF-{uuid.uuid4().hex[:12].upper()}",
+                    phone_number=member.phone_number,
+                )
+                transaction.save()
+
+                # Check if member's balance is sufficient
+                if member.account_balance >= invoice.amount:
+                    # Deduct balance and mark invoice as paid
+                    member.account_balance -= invoice.amount
+                    member.save()
+
+                    # Create a transaction to record payment
+                    Transaction.objects.create(
+                        member=member,
+                        invoice=invoice,
+                        amount=invoice.amount,
+                        comment='INVOICE_PAYMENT',
+                        trans_id=f"INV-{case.case_number}-{member.member_number}",
+                        reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
+                        phone_number=member.phone_number,
                     )
+
+                    # Mark invoice as settled
+                    invoice.is_settled = True
+                    invoice.save()
                 else:
-                    messages.warning(
-                        request,
-                        f"Invoice for member {member.first_name} {member.last_name} created but not settled due to insufficient balance."
-                    )
-            messages.success(request, 'Case added and invoices generated successfully!')
+                    member.account_balance -= invoice.amount
+                    member.save()
+
             return redirect('list_cases')
-        else:
-            messages.error(request, 'Please correct the errors below.')
     else:
         form = CaseForm()
-    return render(request, 'cases/cases_form.html', {'form': form})
+
+    return render(request, 'cases/case_form.html', {'form': form})
 
 
 # Update a case
