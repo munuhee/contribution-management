@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Update Invoice{% else %}Add Invoice{% endif %}{% endblock %}
+
+{% block content %}
+<div class="flex justify-center py-8">
+    <div class="w-full max-w-lg">
+        <div class="bg-white shadow rounded-lg">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-center mb-6">
+                    {% if form.instance.pk %}Update Invoice{% else %}Add Invoice{% endif %}
+                </h2>
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ form.member.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.member.label_tag }}
+                        </label>
+                        {{ form.member }}
+                    </div>
+                    <div>
+                        <label for="{{ form.case.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.case.label_tag }}
+                        </label>
+                        {{ form.case }}
+                    </div>
+                    <div>
+                        <label for="{{ form.invoice_number.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.invoice_number.label_tag }}
+                        </label>
+                        {{ form.invoice_number }}
+                        <p class="text-sm text-gray-500 mt-1">Enter a unique invoice number.</p>
+                    </div>
+                    <div>
+                        <label for="{{ form.issue_date.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.issue_date.label_tag }}
+                        </label>
+                        {{ form.issue_date }}
+                        <p class="text-sm text-gray-500 mt-1">Auto-filled when creating the invoice.</p>
+                    </div>
+                    <div>
+                        <label for="{{ form.due_date.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.due_date.label_tag }}
+                        </label>
+                        {{ form.due_date }}
+                    </div>
+                    <div>
+                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.amount.label_tag }}
+                        </label>
+                        {{ form.amount }}
+                        <p class="text-sm text-gray-500 mt-1">Enter the invoice amount (e.g., 1000.00).</p>
+                    </div>
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.description.label_tag }}
+                        </label>
+                        {{ form.description }}
+                        <p class="text-sm text-gray-500 mt-1">Add a description of the invoice.</p>
+                    </div>
+                    <div>
+                        <label for="{{ form.is_settled.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.is_settled.label_tag }}
+                        </label>
+                        {{ form.is_settled }}
+                        <p class="text-sm text-gray-500 mt-1">Mark the invoice as settled if payment is complete.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                        </button>
+                        <a href="{% url 'invoice_list' %}"
+                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

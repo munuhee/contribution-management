@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -6,7 +7,7 @@ from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import render_to_string
 from .models import Transaction, UnmatchedTransaction, Invoice
-from .forms import TransactionForm, UnmatchedTransactionForm
+from .forms import TransactionForm, UnmatchedTransactionForm, InvoiceForm
 import uuid
 
 
@@ -106,13 +107,18 @@ def add_transaction(request):
 
                     return redirect('list_transactions')
 
-            # Form is valid, and the transaction has been processed, render the form again
+            # Form is valid, and the transaction
+            # has been processed, render the form again
             return redirect('list_transactions')
 
     else:
         form = TransactionForm()
 
-    return render(request, 'transactions/transactions_form.html', {'form': form})
+    return render(
+        request,
+        'transactions/transactions_form.html',
+        {'form': form}
+    )
 
 
 # Update a transaction
@@ -260,3 +266,138 @@ def export_transactions_pdf(request):
         return HttpResponse("Error generating PDF", status=500)
 
     return response
+
+
+# Create Invoice
+def invoice_create(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+        if form.is_valid():
+            invoice = form.save(commit=False)
+            case = invoice.case
+            member = invoice.member
+
+            # Ensure both case and member are available
+            if not case or not member:
+                messages.error(
+                    request,
+                    "Failed to create invoice: Missing associated case or member."
+                )
+                return redirect('invoice_list')
+
+            # Generate a unique invoice number
+            base_invoice_number = (
+                f"INV-{case.case_number}-{member.member_number}"
+            )
+            invoice.invoice_number = base_invoice_number
+            counter = 1
+
+            # Ensure uniqueness of the invoice_number
+            while Invoice.objects.filter(
+                invoice_number=invoice.invoice_number
+            ).exists():
+                invoice.invoice_number = f"{base_invoice_number}-{counter}"
+                counter += 1
+
+            invoice.save()
+
+            # Create the initial transaction for invoice creation
+            Transaction.objects.create(
+                member=member,
+                amount=invoice.amount,
+                comment='INVOICE_CREATION',
+                trans_id=invoice.invoice_number,
+                reference=f"REF-{uuid.uuid4().hex[:12].upper()}",
+                phone_number=member.phone_number,
+            )
+            messages.success(request, "Invoice created successfully!")
+
+            # Check if the member's balance is sufficient for payment
+            if member.account_balance >= invoice.amount:
+                # Deduct balance and mark invoice as paid
+                member.account_balance -= invoice.amount
+                member.save()
+
+                # Create a transaction to record payment
+                Transaction.objects.create(
+                    member=member,
+                    invoice=invoice,
+                    amount=invoice.amount,
+                    comment='INVOICE_PAYMENT',
+                    trans_id=f"PAY-{invoice.invoice_number}",
+                    reference=f"REF-{uuid.uuid4().hex[:8].upper()}",
+                    phone_number=member.phone_number,
+                )
+
+                # Mark invoice as settled
+                invoice.is_settled = True
+                invoice.save()
+                messages.success(
+                    request,
+                    "Invoice payment recorded successfully!"
+                )
+            else:
+                # Handle insufficient balance
+                member.account_balance -= invoice.amount
+                member.save()
+                messages.warning(
+                    request,
+                    "Invoice created but member has insufficient balance for payment."
+                )
+
+            return redirect('invoice_list')
+        else:
+            # Handle form validation errors
+            messages.error(
+                request,
+                "There was an error with your submission. Please correct it."
+            )
+    else:
+        form = InvoiceForm()
+
+    return render(
+        request,
+        'invoices/invoice_form.html',
+        {'form': form}
+    )
+
+
+# Retrieve Invoice (List View)
+def invoice_list(request):
+    invoices = Invoice.objects.all()
+    return render(
+        request,
+        'invoices/invoice_list.html',
+        {'invoices': invoices}
+    )
+
+
+# Retrieve Invoice (Detail View)
+def invoice_detail(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    return render(
+        request,
+        'invoices/invoice_detail.html',
+        {'invoice': invoice}
+    )
+
+
+# Update Invoice
+def invoice_update(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, instance=invoice)
+        if form.is_valid():
+            form.save()
+            return redirect('invoice_detail', pk=invoice.pk)
+    else:
+        form = InvoiceForm(instance=invoice)
+    return render(request, 'invoices/invoice_form.html', {'form': form})
+
+
+# Delete Invoice
+@login_required
+def invoice_delete(request, pk):
+    invoice = get_object_or_404(Invoice, id=pk)
+    invoice.delete()
+    return redirect('invoice_list')

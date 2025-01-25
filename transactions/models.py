@@ -8,8 +8,16 @@ class Invoice(models.Model):
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, blank=True, null=True
     )
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, blank=True, null=True)
-    invoice_number = models.CharField(max_length=100, unique=True)
+    case = models.ForeignKey(
+        Case,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+    invoice_number = models.CharField(
+        max_length=100,
+        unique=True
+    )
     issue_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)

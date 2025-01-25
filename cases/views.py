@@ -1,14 +1,17 @@
+# Standard library imports
+import uuid
+
+# Django imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+
+# Local application imports
 from members.models import Member
 from transactions.models import Invoice, Transaction
 from .models import Case
 from .forms import CaseForm
-import uuid
-from datetime import timedelta
-from django.utils.timezone import now
 
 
 # List all cases
@@ -61,7 +64,10 @@ def add_case(request):
                 invoice = Invoice.objects.create(
                     member=member,
                     case=case,
-                    invoice_number=f"INV-{case.case_number}-{member.member_number}",
+                    invoice_number=(
+                        f"INV-{case.case_number}"
+                        f"-{member.member_number}"
+                    ),
                     due_date=case.deadline,
                     amount=case.amount,
                     description=f"Invoice for case {case.case_number}",
@@ -89,7 +95,9 @@ def add_case(request):
                         invoice=invoice,
                         amount=invoice.amount,
                         comment='INVOICE_PAYMENT',
-                        trans_id=f"INV-{case.case_number}-{member.member_number}",
+                        trans_id=(
+                            f"INV-{case.case_number}-{member.member_number}"
+                        ),
                         reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
                         phone_number=member.phone_number,
                     )

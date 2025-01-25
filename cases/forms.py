@@ -7,35 +7,37 @@ class CaseForm(forms.ModelForm):
         model = Case
         fields = ['case_number', 'amount', 'description', 'deadline']
         widgets = {
-            'case_number': forms.TextInput(
-                attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder': 'Enter case number'
-                }
-            ),
-            'amount': forms.NumberInput(
-                attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'step': '0.01',
-                    'placeholder': 'Enter amount'
-                    }
-                ),
-            'description': forms.Textarea(
-                attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'rows': 4,
-                    'placeholder': 'Enter description'
-                    }
-                ),
-            'deadline': forms.DateTimeInput(
-                attrs={'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', 'type': 'datetime-local'}
-            ),
+            'case_number': forms.TextInput(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm '
+                          'rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 '
+                          'dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white '
+                          'dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'placeholder': 'Enter case number'
+            }),
+            'amount': forms.NumberInput(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm '
+                          'rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 '
+                          'dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white '
+                          'dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'step': '0.01', 'placeholder': 'Enter amount'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm '
+                          'rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 '
+                          'dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white '
+                          'dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'rows': 4, 'placeholder': 'Enter description'
+            }),
+            'deadline': forms.DateTimeInput(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm '
+                          'rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 '
+                          'dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white '
+                          'dark:focus:ring-blue-500 dark:focus:border-blue-500', 'type': 'datetime-local'
+            }),
         }
         labels = {
-            'case_number': 'Case Number',
-            'amount': 'Amount (KES)',
-            'description': 'Description',
-            'deadline': 'Deadline',
+            'case_number': 'Case Number', 'amount': 'Amount (KES)',
+            'description': 'Description', 'deadline': 'Deadline'
         }
 
     def clean_case_number(self):

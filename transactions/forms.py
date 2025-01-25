@@ -1,5 +1,5 @@
 from django import forms
-from .models import Transaction, UnmatchedTransaction
+from .models import Transaction, UnmatchedTransaction, Invoice
 
 
 class TransactionForm(forms.ModelForm):
@@ -90,3 +90,50 @@ class UnmatchedTransactionForm(forms.ModelForm):
         if amount <= 0:
             raise forms.ValidationError('Amount must be greater than zero.')
         return amount
+
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = [
+            'member', 'case', 'due_date',
+            'amount', 'description', 'is_settled'
+        ]
+        widgets = {
+            'member': forms.Select(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'step': '0.01'
+                }
+            ),
+            'case': forms.Select(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'step': '0.01'
+                }
+            ),
+            'due_date': forms.DateTimeInput(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'type': 'datetime-local'
+                }
+            ),
+            'amount': forms.NumberInput(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'step': '0.01'
+                }
+            ),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'step': '0.01'
+                }
+            ),
+            'is_settled': forms.CheckboxInput(
+                attrs={
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'step': '0.01'
+                }
+            )
+        }
