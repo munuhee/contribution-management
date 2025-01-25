@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+from penalties.models import Penalty
 
 
 class Member(models.Model):
@@ -11,3 +13,12 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def apply_penalty(self, invoice):
+        penalty_amount = settings.PENALTY_AMOUNT
+        Penalty.objects.create(
+            member=self,
+            invoice=invoice,
+            amount=penalty_amount,
+            is_paid=False
+        )

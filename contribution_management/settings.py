@@ -161,6 +161,9 @@ MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE')
 CONFIRMATION_URL = os.getenv('MPESA_CONFIRMATION_URL')
 VALIDATION_URL = os.getenv('VALIDATION_URL')
 
+# Penalty settings
+PENALTY_AMOUNT = os.getenv('PENALTY_AMOUNT')
+
 if MPESA_ENV == 'sandbox':
     # Mpesa sandbox URLs
     MPESA_BASE_URL = "https://sandbox.safaricom.co.ke/"

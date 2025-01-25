@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 
 from xhtml2pdf import pisa
 
+from penalties.models import Penalty
 from .models import Transaction, UnmatchedTransaction, Invoice
 from .forms import TransactionForm, UnmatchedTransactionForm, InvoiceForm
 
@@ -51,8 +52,7 @@ def add_transaction(request):
         form = TransactionForm(request.POST)
         if form.is_valid():
             transaction = form.save(commit=False)
-            transaction.trans_id = f"TXN-{uuid.uuid4().hex[:4].upper()}"
-            transaction.reference = f"REF-{uuid.uuid4().hex[:4].upper()}"
+            transaction.trans_id = f"TXN{uuid.uuid4().hex[:6].upper()}"
 
             # Handling based on the transaction comment type
             if transaction.comment == 'INVOICE_PAYMENT' and transaction.member:
@@ -78,7 +78,6 @@ def add_transaction(request):
                             amount=invoice.amount,
                             comment='INVOICE_PAYMENT',
                             trans_id=invoice.invoice_number,
-                            reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
                             phone_number="-",
                             invoice=invoice,
                         )
@@ -102,14 +101,64 @@ def add_transaction(request):
                         member=member,
                         amount=amount_remaining,
                         comment='ACCOUNT_TOPUP',
-                        trans_id=f"TXN-{uuid.uuid4().hex[:4].upper()}",
-                        reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
+                        trans_id=f"TXN-{uuid.uuid4().hex[:6].upper()}",
                         phone_number=member.phone_number,
                     )
                     top_up_transaction.save()
 
                     return redirect('list_transactions')
 
+            if transaction.comment == 'PENALTY_PAYMENT' and transaction.member:
+                member = transaction.member
+                remaining_amount = transaction.amount
+                penalties = Penalty.objects.filter(member=member)
+                for penalty in penalties:
+                    if remaining_amount <= 0:
+                        break
+
+                    if penalty.amount <= remaining_amount:
+                        # Fully settle the penalty
+                        remaining_amount -= penalty.amount
+                        penalty.is_paid = True
+                        penalty.save()
+
+                        # Create a transaction for the penalty
+                        penalty_transaction = Transaction(
+                            member=member,
+                            amount=penalty.amount,
+                            comment='PENALTY_PAYMENT',
+                            trans_id=penalty.invoice.invoice_number,
+                            phone_number="-",
+                            invoice=penalty.invoice,
+                        )
+                        penalty_transaction.save()
+                        member.account_balance += penalty.amount
+                        member.save()
+                    else:
+                        # Partially settle the penalty
+                        penalty.amount -= remaining_amount
+                        remaining_amount = 0
+                        penalty.save()
+
+                # Add any remaining amount as a top-up
+                if remaining_amount > 0:
+                    # Add remaining amount to the member's balance
+                    member.account_balance += remaining_amount
+                    member.save()
+
+                    # Create a top-up transaction for the remaining amount
+                    top_up_transaction = Transaction(
+                        member=member,
+                        amount=remaining_amount,
+                        comment='ACCOUNT_TOPUP',
+                        trans_id=f"TXN-{uuid.uuid4().hex[:6].upper()}",
+                        phone_number=member.phone_number,
+                    )
+                    top_up_transaction.save()
+
+                    return redirect('list_transactions')
+
+            transaction.save()
             # Form is valid, and the transaction
             # has been processed, render the form again
             return redirect('list_transactions')
@@ -392,7 +441,7 @@ def invoice_update(request, pk):
         form = InvoiceForm(request.POST, instance=invoice)
         if form.is_valid():
             form.save()
-            return redirect('invoice_detail', pk=invoice.pk)
+            return redirect('invoice_list')
     else:
         form = InvoiceForm(instance=invoice)
     return render(request, 'invoices/invoice_form.html', {'form': form})

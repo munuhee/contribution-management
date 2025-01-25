@@ -5,7 +5,7 @@ from .models import Penalty
 class PenaltyForm(forms.ModelForm):
     class Meta:
         model = Penalty
-        fields = ['member', 'case', 'amount', 'is_paid']
+        fields = ['member', 'invoice', 'amount', 'is_paid']
         widgets = {
             'member': forms.Select(
                 attrs={
@@ -18,7 +18,7 @@ class PenaltyForm(forms.ModelForm):
                     'aria-label': 'Select Member'
                 }
             ),
-            'case': forms.Select(
+            'invoice': forms.Select(
                 attrs={
                     'class': 'bg-gray-50 border border-gray-300'
                     'text-gray-900 text-sm rounded-lg focus:ring-blue-500'
@@ -26,7 +26,7 @@ class PenaltyForm(forms.ModelForm):
                     'dark:border-gray-600 dark:placeholder-gray-400'
                     'dark:text-white dark:focus:ring-blue-500'
                     'dark:focus:border-blue-500',
-                    'aria-label': 'Select Case'
+                    'aria-label': 'Select invoice'
                 }
             ),
             'amount': forms.NumberInput(
@@ -50,7 +50,7 @@ class PenaltyForm(forms.ModelForm):
         }
         labels = {
             'member': 'Member',
-            'case': 'Case',
+            'invoice': 'Invoice',
             'amount': 'Penalty Amount',
             'is_paid': 'Payment Status',
         }
