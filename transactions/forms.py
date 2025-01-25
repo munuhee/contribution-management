@@ -9,18 +9,33 @@ class TransactionForm(forms.ModelForm):
         widgets = {
             'amount': forms.NumberInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500 '
+                    'focus:border-blue-500'
+                    'block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600'
+                    'dark:placeholder-gray-400 dark:text-white'
+                    ' dark:focus:ring-blue-500 dark:focus:border-blue-500',
                     'step': '0.01'
                     }
                 ),
             'member': forms.Select(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500'
                     }
                 ),
             'comment': forms.Select(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500'
                 }
             )
         }
@@ -47,36 +62,66 @@ class UnmatchedTransactionForm(forms.ModelForm):
         widgets = {
             'trans_id': forms.TextInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                     }
                 ),
             'reference': forms.TextInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                     }
                 ),
             'phone_number': forms.TextInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                     }
                 ),
             'amount': forms.NumberInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                     }
                 ),
             'is_settled': forms.CheckboxInput(
                 attrs={
-                    'class': 'peer w-6 h-6 border-2 border-gray-400 rounded-md checked:bg-blue-500 checked:border-blue-500 focus:ring-0',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     }
             ),
             'comment': forms.Textarea(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                 }
             )
         }
@@ -102,37 +147,66 @@ class InvoiceForm(forms.ModelForm):
         widgets = {
             'member': forms.Select(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                 }
             ),
             'case': forms.Select(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                 }
             ),
             'due_date': forms.DateTimeInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'type': 'datetime-local'
                 }
             ),
             'amount': forms.NumberInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'step': '0.01'
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500'
                 }
             ),
             'description': forms.Textarea(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                 }
             ),
             'is_settled': forms.CheckboxInput(
                 attrs={
-                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900'
+                    'text-sm rounded-lg focus:ring-blue-500'
+                    'focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700'
+                    'dark:border-gray-600 dark:placeholder-gray-400'
+                    'dark:text-white dark:focus:ring-blue-500'
+                    'dark:focus:border-blue-500',
                     'step': '0.01'
                 }
             )
