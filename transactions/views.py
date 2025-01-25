@@ -281,7 +281,7 @@ def invoice_create(request):
             if not case or not member:
                 messages.error(
                     request,
-                    "Failed to create invoice: Missing associated case or member."
+                    "Failed: Missing associated case or member."
                 )
                 return redirect('invoice_list')
 
@@ -342,7 +342,7 @@ def invoice_create(request):
                 member.save()
                 messages.warning(
                     request,
-                    "Invoice created but member has insufficient balance for payment."
+                    "Invoice created but member has insufficient balance."
                 )
 
             return redirect('invoice_list')

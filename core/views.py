@@ -1,13 +1,13 @@
-from django.shortcuts import render
-from django.db.models import Sum
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.contrib import messages
+from django.db.models import Sum
+from django.shortcuts import redirect, render
+
 from .forms import LoginForm
+from cases.models import Case
 from members.models import Member
 from transactions.models import Transaction
-from cases.models import Case
 
 
 def login_view(request):

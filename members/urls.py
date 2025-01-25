@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
-    list_members, add_member, update_member, delete_member, member_detail
+    list_members, add_member,
+    update_member, delete_member, member_detail
 )
 
 urlpatterns = [

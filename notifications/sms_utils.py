@@ -1,15 +1,15 @@
 """
 Sends an SMS using the Africa's Talking API.
 
-This function allows sending SMS messages to a specified recipient using the Africa's Talking messaging API.
+This function allows sending SMS messages to a specified recipient.
 The API credentials and other settings are configured in Django settings.
 
 Args:
-    to (str): The recipient's phone number in international format (e.g., +254712345678).
+    to (str): The recipient's phone number (e.g., +254712345678).
     message (str): The text message to be sent.
 
 Returns:
-    dict: The response from the Africa's Talking API if the request is successful.
+    dict: The response from the Africa's Talking API.
     None: If the API request fails (e.g., non-200 status code).
 
 Dependencies:

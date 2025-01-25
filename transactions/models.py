@@ -6,7 +6,10 @@ from cases.models import Case
 
 class Invoice(models.Model):
     member = models.ForeignKey(
-        'members.Member', on_delete=models.CASCADE, blank=True, null=True
+        'members.Member',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
     )
     case = models.ForeignKey(
         Case,

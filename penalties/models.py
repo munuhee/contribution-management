@@ -12,9 +12,11 @@ class Penalty(models.Model):
     is_paid = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Perform the model lookup here instead of at the class level
-        if isinstance(self.member, str):  # Check if the member is still a string reference
-            self.member = apps.get_model('members', 'Member').objects.get(id=self.member)
+        # Perform the model lookup
+        if isinstance(self.member, str):
+            self.member = apps.get_model(
+                'members', 'Member'
+            ).objects.get(id=self.member)
         super().save(*args, **kwargs)
 
     def __str__(self):
