@@ -32,6 +32,19 @@ def logout_view(request):
     return redirect('login')
 
 
+def password_reset_done(request):
+    messages.success(
+        request,
+        "An email has been sent with instructions to reset your password."
+    )
+    return redirect('login')
+
+
+def password_reset_complete(request):
+    messages.success(request, "Your password has been reset successfully.")
+    return redirect('login')
+
+
 @login_required
 def dashboard_view(request):
     admin = {'name': 'Jone Doe', 'role': 'Admin'}

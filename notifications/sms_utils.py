@@ -1,7 +1,7 @@
 """
 Sends an SMS using the Africa's Talking SDK.
 
-This module provides utility functions for sending SMS messages using the Africa's Talking SDK.
+This module provides utility functions for sending SMS messages.
 
 Dependencies:
     - `africastalking`: The Africa's Talking Python SDK.
@@ -39,7 +39,13 @@ def send_sms(to, message):
     try:
         logger.info(f"Sending SMS to {to} with message: {message}")
         response = sms.send(message, [to])
-        logger.info(f"SMS sent successfully to {to}: {response}")
+        if response:
+            logger.info(f"SMS response: {response}")
+            recipients = response.get("SMSMessageData", {}).get("Recipients", [])
+            for recipient in recipients:
+                status = recipient.get("status")
+                if status != "Success":
+                    logger.warning(f"SMS delivery failed for {to}: {recipient}")
         return response
     except Exception as e:
         logger.error(f"Error sending SMS to {to}: {str(e)}")
