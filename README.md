@@ -85,6 +85,7 @@ The Contribution Management App is designed to manage contributions among member
 
       # Mpesa settings
       MPESA_ENV=sandbox
+      WHITELISTED_IPS=[196.201.214.200,196.201.214.206,196.201.213.114,196.201.214.207,196.201.214.208,196.201.213.44,196.201.212.127,196.201.212.138,196.201.212.129,196.201.212.136,196.201.212.74,196.201.212.69]
       MPESA_CONSUMER_KEY=your_mpesa_consumer_key
       MPESA_CONSUMER_SECRET=your_mpesa_consumer_secret
       MPESA_SHORTCODE=your_mpesa_shortcode

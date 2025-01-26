@@ -33,10 +33,13 @@ from transactions.models import Transaction, UnmatchedTransaction, Invoice
 from penalties.models import Penalty
 from members.models import Member
 from notifications.sms_utils import send_sms
-from .decorators import handle_exceptions
+from django.conf import settings
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
+# Define the whitelist for IP addresses
+WHITELISTED_IPS = settings.WHITELISTED_IPS
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -47,8 +50,15 @@ class MpesaValidationView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MpesaConfirmationView(View):
-    @handle_exceptions
     def post(self, request, *args, **kwargs):
+        # Check if the request's IP is in the whitelist
+        client_ip = request.META.get('REMOTE_ADDR')
+        if client_ip not in WHITELISTED_IPS:
+            logger.error(f"Request from IP {client_ip} is not whitelisted.")
+            return JsonResponse(
+                {"status": "error", "message": "IP not whitelisted"},
+                status=403
+            )
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:

@@ -60,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'mpesa.middleware.IPWhitelistMiddleware'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -156,6 +155,7 @@ AFRICA_TALKING_API_URL = os.getenv('AFRICA_TALKING_API_URL')
 AFRICA_TALKING_AUTH_TOKEN_URL = os.getenv('AFRICA_TALKING_AUTH_TOKEN_URL')
 
 # Mpesa settings
+WHITELISTED_IPS = os.getenv('WHITELISTED_IPS')
 MPESA_ENV = os.getenv('MPESA_ENV')
 MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET')
