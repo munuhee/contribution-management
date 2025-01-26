@@ -33,6 +33,7 @@ from transactions.models import Transaction, UnmatchedTransaction, Invoice
 from penalties.models import Penalty
 from members.models import Member
 from notifications.sms_utils import send_sms
+from .decorators import handle_exceptions
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -46,6 +47,7 @@ class MpesaValidationView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MpesaConfirmationView(View):
+    @handle_exceptions
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
