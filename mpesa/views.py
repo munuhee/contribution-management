@@ -69,6 +69,10 @@ class MpesaConfirmationView(View):
         bill_ref_number = data.get("BillRefNumber").upper()
         msisdn = data.get("MSISDN")
 
+        # Ensure MSISDN starts with a plus sign
+        if not msisdn.startswith("+"):
+            msisdn = f"+{msisdn}"
+
         try:
             member = None
 

@@ -1,45 +1,46 @@
 """
-Sends an SMS using the Africa's Talking API.
+Sends an SMS using the Africa's Talking SDK.
 
-This function allows sending SMS messages to a specified recipient.
-The API credentials and other settings are configured in Django settings.
-
-Args:
-    to (str): The recipient's phone number (e.g., +254712345678).
-    message (str): The text message to be sent.
-
-Returns:
-    dict: The response from the Africa's Talking API.
-    None: If the API request fails (e.g., non-200 status code).
+This module provides utility functions for sending SMS messages using the Africa's Talking SDK.
 
 Dependencies:
-    - `requests`: For making HTTP POST requests.
+    - `africastalking`: The Africa's Talking Python SDK.
     - Django settings:
         - `AFRICA_TALKING_API_KEY`: The API key for authenticating requests.
         - `AFRICA_TALKING_USERNAME`: The Africa's Talking account username.
 """
 
-import requests
+import africastalking
+import logging
 from django.conf import settings
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
+# Initialize Africa's Talking SDK
+africastalking.initialize(
+    settings.AFRICA_TALKING_USERNAME,
+    settings.AFRICA_TALKING_API_KEY
+)
+sms = africastalking.SMS
 
 
 def send_sms(to, message):
-    url = settings.AFRICA_TALKING_API_URL
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'apiKey': settings.AFRICA_TALKING_API_KEY,
-    }
+    """
+    Sends an SMS message to a single recipient using Africa's Talking.
 
-    data = {
-        'username': settings.AFRICA_TALKING_USERNAME,
-        'to': to,
-        'message': message,
-        'from': 'Msingi Bora/Kirathimo',
-    }
+    Args:
+        to (str): The recipient's phone number (e.g., "+254712345678").
+        message (str): The text message to be sent.
 
-    response = requests.post(url, headers=headers, data=data)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
+    Returns:
+        dict: The response from Africa's Talking API.
+    """
+    try:
+        logger.info(f"Sending SMS to {to} with message: {message}")
+        response = sms.send(message, [to])
+        logger.info(f"SMS sent successfully to {to}: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Error sending SMS to {to}: {str(e)}")
+        return {"error": str(e)}

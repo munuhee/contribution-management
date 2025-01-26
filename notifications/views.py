@@ -33,7 +33,7 @@ logging.basicConfig(
 @login_required
 def send_bulk_sms(request):
     """
-    View to send bulk SMS messages to all members.
+    View to send bulk SMS messages to all members using Africa's Talking SDK.
     """
     if request.method == 'POST':
         form = SendBulkSMSForm(request.POST)
@@ -45,28 +45,22 @@ def send_bulk_sms(request):
 
             for member in members:
                 if not member.phone_number:
-                    logger.warning(f"Member {member.id} has no phone number.")
+                    logger.warning(
+                        f"Member {member.id} has no phone number."
+                    )
                     failed_count += 1
                     continue
 
-                try:
-                    response = send_sms(member.phone_number, message)
-                    if response and response.status_code == 200:
-                        response_data = response.json()
-                        logger.info(
-                            f"SMS sent successfully to {member.phone_number}."
-                        )
-                        successful_count += 1
-                    else:
-                        response_data = response.json() if response else {}
-                        logger.error(
-                            f"Failed to send SMS to {member.phone_number}: "
-                            f"{response_data}"
-                        )
-                        failed_count += 1
-                except Exception as e:
-                    logger.exception(
-                        f"Error sending SMS to {member.phone_number}: {e}"
+                response = send_sms(member.phone_number, message)
+                if "error" not in response:
+                    logger.info(
+                        f"SMS sent successfully to {member.phone_number}."
+                    )
+                    successful_count += 1
+                else:
+                    logger.error(
+                        f"Failed to send SMS to"
+                        f" {member.phone_number}: {response['error']}"
                     )
                     failed_count += 1
 
@@ -80,8 +74,8 @@ def send_bulk_sms(request):
                     }
                 )
                 logger.info(
-                    f"Bulk SMS operation completed. "
-                    f"{successful_count} succeeded, {failed_count} failed."
+                    f"Bulk SMS operation completed. {successful_count}"
+                    f"succeeded, {failed_count} failed."
                 )
             except Exception as e:
                 logger.exception(f"Error saving message details: {e}")
@@ -101,7 +95,11 @@ def send_bulk_sms(request):
     else:
         form = SendBulkSMSForm()
 
-    return render(request, 'notifications/send_bulk_sms.html', {'form': form})
+    return render(
+        request,
+        'notifications/send_bulk_sms.html',
+        {'form': form}
+    )
 
 
 @login_required
