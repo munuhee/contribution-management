@@ -78,17 +78,30 @@ The Contribution Management App is designed to manage contributions among member
       SECRET_KEY= # Your Django secret key
 
       # Africa's Talking API credentials
-      AFRICA_TALKING_USERNAME= # Your Africa's Talking username
-      AFRICA_TALKING_API_KEY= # Your Africa's Talking API key
-      AFRICA_TALKING_API_URL= # https://api.sandbox.africastalking.com/version1/messaging (sandbox URL for testing)
+      AFRICA_TALKING_USERNAME=your_africas_talking_username
+      AFRICA_TALKING_API_KEY=your_africas_talking_api_key
+      AFRICA_TALKING_API_URL=https://api.sandbox.africastalking.com/version1/messaging
+      AFRICA_TALKING_AUTH_TOKEN_URL=https://api.africastalking.com/auth-token/generate
 
       # Mpesa settings
-      MPESA_ENV=sandbox # Environment mode: 'sandbox' for testing, 'production' for live transactions
-      MPESA_CONSUMER_KEY= # Your Mpesa consumer key
-      MPESA_CONSUMER_SECRET= # Your Mpesa consumer secret
-      MPESA_SHORTCODE= # Your Mpesa shortcode
-      CONFIRMATION_URL=yourdomain.com/mpesa/confirmation/ # URL for receiving payment confirmation
-      VALIDATION_URL=yourdomain.com/mpesa/validation/ # URL for receiving payment validation
+      MPESA_ENV=sandbox
+      MPESA_CONSUMER_KEY=your_mpesa_consumer_key
+      MPESA_CONSUMER_SECRET=your_mpesa_consumer_secret
+      MPESA_SHORTCODE=your_mpesa_shortcode
+      CONFIRMATION_URL=yourdomain.com/mpesa/confirmation/
+      VALIDATION_URL=yourdomain.com/mpesa/validation/
+
+      # Penalty settings
+      PENALTY_AMOUNT=your_penalty_amount
+
+      # Email settings
+      EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+      EMAIL_HOST=smtp.gmail.com
+      EMAIL_PORT=587
+      EMAIL_USE_TLS=True
+      EMAIL_HOST_USER=your_email@example.com
+      EMAIL_HOST_PASSWORD=your_email_password
+      DEFAULT_FROM_EMAIL=your_email@example.com
 
      ```
 
@@ -131,12 +144,11 @@ The Contribution Management App is designed to manage contributions among member
       ```
     - Add the following line to run the command daily at midnight:
       ```bash
-      0 0 * * * /bin/bash -c 'source /path/to/your/virtualenv/bin/activate && cd /path/to/your/project && python manage.py apply_penalties'
+      0 0 * * * /bin/bash -c 'source venv/bin/activate && python manage.py apply_penalties'
       ```
       Explanation:
       - `/bin/bash -c` ensures the command is run in a shell.
-      - `source /path/to/your/virtualenv/bin/activate` activates your virtual environment.
-      - `cd /path/to/your/project` navigates to your project directory.
+      - `source venv/bin/activate` activates your virtual environment.
       - `python manage.py apply_penalties` runs the Django management command to apply penalties.
 
 12. **Run the server**:
