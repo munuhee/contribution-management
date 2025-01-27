@@ -86,123 +86,183 @@ class MpesaConfirmationView(View):
             msisdn = f"+{msisdn}"
 
         try:
-            member = None
-
+            # Determine if the payment is for a penalty or regular transaction
             if bill_ref_number.endswith("P"):
                 # Handle payments for penalties
-                member_number = bill_ref_number[:-1]
-                member = Member.objects.get(member_number=member_number)
-                logger.info(
-                    "Processing penalty payment for member: %s",
-                    member_number
-                )
-
-                remaining_amount = trans_amount
-                penalties = Penalty.objects.filter(
-                    member=member,
-                    is_paid=False
-                ).order_by('date')
-                total_penalties_paid = 0
-
-                for penalty in penalties:
-                    if remaining_amount >= penalty.amount:
-                        remaining_amount -= penalty.amount
-                        total_penalties_paid += penalty.amount
-                        penalty.is_paid = True
-                        penalty.save()
-
-                        Transaction.objects.create(
-                            member=member,
-                            trans_id=trans_id,
-                            amount=penalty.amount,
-                            phone_number=msisdn,
-                            comment="Penalty Payment",
-                        )
-                    else:
-                        break
-
-                if remaining_amount > 0:
-                    # Settle invoices in the correct order
-                    self.settle_invoices(
-                        member,
-                        remaining_amount,
-                        trans_id, msisdn
-                    )
-            else:
-                # Handle payments without "P"
-                member = Member.objects.get(member_number=bill_ref_number)
-                logger.info(
-                    "Processing payment for invoices for member: %s",
-                    bill_ref_number
-                )
-
-                # Settle the oldest invoices first
-                remaining_amount = self.settle_invoices(
-                    member,
-                    trans_amount,
+                self.handle_penalty_payment(
+                    data,
                     trans_id,
+                    trans_amount,
+                    bill_ref_number,
+                    msisdn
+                )
+            else:
+                # Handle regular payments
+                self.handle_regular_payment(
+                    data,
+                    trans_id,
+                    trans_amount,
+                    bill_ref_number,
                     msisdn
                 )
 
-            # Update member account balance if there is remaining amount
-            if member and remaining_amount > 0:
-                member.account_balance += remaining_amount
-                member.save()
+        except Exception as e:
+            logger.error(f"Error processing payment: {e}")
+            return JsonResponse(
+                {"status": "error", "message": "Error processing payment"},
+                status=500
+            )
+
+    def handle_regular_payment(
+        self, data, trans_id, trans_amount,
+        bill_ref_number, msisdn
+    ):
+        """Handle payments that are not penalties."""
+        try:
+            try:
+                # Look up the member using the bill reference number (or MSISDN if needed)
+                member_number = bill_ref_number  # Assuming bill_ref_number is the member number
+                member = Member.objects.filter(member_number=member_number).first()
+
+                if member:
+                    # Process the payment (settle invoices or top up account balance)
+                    self.settle_invoices(member, trans_amount, trans_id, msisdn)
+                else:
+                    # Create an unmatched transaction if no member is found
+                    UnmatchedTransaction.objects.create(
+                        trans_id=trans_id,
+                        amount=trans_amount,
+                        phone_number=msisdn,
+                        bill_ref_number=bill_ref_number,
+                    )
+                    message = (
+                        "Your payment could not be matched to any account. "
+                        "Please contact support for assistance."
+                    )
+                    send_sms(to=msisdn, message=message)
+
+            except Exception as e:
+                logger.error(f"Error handling regular payment: {e}")
+
+    def handle_penalty_payment(
+        self, data, trans_id,
+        trans_amount, bill_ref_number, msisdn
+    ):
+        """Handle payments for penalties."""
+        try:
+            # Find the penalty record
+            penalty = Penalty.objects.filter(
+                invoice__invoice_number=bill_ref_number[:-1],
+                is_paid=False
+            ).first()
+
+            if penalty:
+                penalty.is_paid = True
+                penalty.save()
+
+                # Create a penalty payment transaction
                 Transaction.objects.create(
-                    member=member,
+                    member=penalty.member,
+                    amount=penalty.amount,
+                    comment='PENALTY_PAYMENT',
                     trans_id=trans_id,
-                    amount=remaining_amount,
                     phone_number=msisdn,
-                    comment="Account Top-up",
+                    invoice=penalty.invoice
                 )
 
+                # Update member's account balance
+                penalty.member.account_balance += penalty.amount
+                penalty.member.save()
+
+                # Send confirmation SMS to the user
                 message = (
-                    f"Dear {member.first_name}, "
-                    f"your payment of {trans_amount:.2f} has been received. "
-                    f"Your updated account balance is {
-                        member.account_balance:.2f
-                    }."
+                    f"Penalty payment of {penalty.amount}"
+                    f"successfully processed."
                 )
                 send_sms(to=msisdn, message=message)
 
-        except Member.DoesNotExist:
-            logger.error(
-                "Member not found for BillRefNumber: %s",
-                bill_ref_number
-            )
-            UnmatchedTransaction.objects.create(
-                trans_id=trans_id,
-                amount=trans_amount,
-                phone_number=msisdn,
-            )
-            message = (
-                "Your payment could not be matched to any account. "
-                "Please contact support for assistance."
-            )
-            send_sms(to=msisdn, message=message)
+            else:
+                # If no matching penalty found, create an unmatched transaction
+                UnmatchedTransaction.objects.create(
+                    trans_id=trans_id,
+                    amount=trans_amount,
+                    phone_number=msisdn,
+                )
+                message = (
+                    "Your penalty payment could not be matched to any account."
+                    " Please contact support for assistance."
+                )
+                send_sms(to=msisdn, message=message)
+
+        except Exception as e:
+            logger.error(f"Error handling penalty payment: {e}")
 
     def settle_invoices(self, member, amount, trans_id, msisdn):
         """Settle unpaid invoices for a member starting from the oldest."""
-        remaining_amount = amount
-        invoices = Invoice.objects.filter(
-            member=member, is_settled=False
-        ).order_by('issue_date')
+        try:
+            outstanding_invoices = Invoice.objects.filter(
+                member=member, is_settled=False
+            ).order_by('issue_date')
 
-        for invoice in invoices:
-            if remaining_amount >= invoice.amount:
-                remaining_amount -= invoice.amount
-                invoice.is_settled = True
-                invoice.save()
+            amount_remaining = amount
+            for invoice in outstanding_invoices:
+                if amount_remaining <= 0:
+                    break
+
+                if invoice.outstanding_balance <= amount_remaining:
+                    # Fully settle the invoice
+                    paid_amount = invoice.outstanding_balance
+                    amount_remaining -= paid_amount
+                    invoice.outstanding_balance = 0
+                    invoice.is_settled = True
+                    invoice.save()
+
+                    # Log the payment transaction
+                    Transaction.objects.create(
+                        member=member,
+                        amount=paid_amount,
+                        comment='INVOICE_PAYMENT',
+                        trans_id=trans_id,
+                        phone_number=msisdn,
+                        invoice=invoice
+                    )
+
+                    # Update member's account balance
+                    member.account_balance += paid_amount
+                    member.save()
+                else:
+                    # Partially settle the invoice
+                    paid_amount = amount_remaining
+                    invoice.outstanding_balance -= paid_amount
+                    amount_remaining = 0
+                    invoice.save()
+
+                    # Log the partial payment transaction
+                    Transaction.objects.create(
+                        member=member,
+                        amount=paid_amount,
+                        comment='INV_PARTIAL_PAY',
+                        trans_id=trans_id,
+                        phone_number=msisdn,
+                        invoice=invoice
+                    )
+
+                    # Update member's account balance
+                    member.account_balance += paid_amount
+                    member.save()
+
+            # Handle any remaining amount as a top-up
+            if amount_remaining > 0:
+                member.account_balance += amount_remaining
+                member.save()
 
                 Transaction.objects.create(
                     member=member,
+                    amount=amount_remaining,
+                    comment='ACCOUNT_TOPUP',
                     trans_id=trans_id,
-                    amount=invoice.amount,
-                    invoice=invoice,
-                    phone_number=msisdn,
-                    comment="Invoice Payment",
+                    phone_number=msisdn
                 )
-            else:
-                break
 
-        return remaining_amount
+        except Exception as e:
+            logger.error(f"Error settling invoices: {e}")

@@ -78,7 +78,6 @@ def add_case(request):
                     amount=case.amount,
                     comment='INVOICE_CREATION',
                     trans_id=f"INV-{case.case_number}-{member.member_number}",
-                    reference=f"REF-{uuid.uuid4().hex[:12].upper()}",
                     phone_number=member.phone_number,
                 )
                 transaction.save()
@@ -98,7 +97,6 @@ def add_case(request):
                         trans_id=(
                             f"INV-{case.case_number}-{member.member_number}"
                         ),
-                        reference=f"REF-{uuid.uuid4().hex[:4].upper()}",
                         phone_number=member.phone_number,
                     )
 

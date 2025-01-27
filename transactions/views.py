@@ -45,7 +45,6 @@ def list_transactions(request):
     )
 
 
-# Add a new transaction
 @login_required
 def add_transaction(request):
     if request.method == 'POST':
@@ -54,8 +53,7 @@ def add_transaction(request):
             transaction = form.save(commit=False)
             transaction.trans_id = f"TXN{uuid.uuid4().hex[:6].upper()}"
 
-            # Handling based on the transaction comment type
-            if transaction.comment == 'INVOICE_PAYMENT' and transaction.member:
+            if transaction.comment in ['INVOICE_PAYMENT', 'INV_PARTIAL_PAY'] and transaction.member:
                 member = transaction.member
                 outstanding_invoices = Invoice.objects.filter(
                     member=member, is_settled=False
@@ -66,101 +64,183 @@ def add_transaction(request):
                     if amount_remaining <= 0:
                         break
 
-                    if invoice.amount <= amount_remaining:
+                    if invoice.outstanding_balance <= amount_remaining:
                         # Fully settle the invoice
-                        amount_remaining -= invoice.amount
+                        paid_amount = invoice.outstanding_balance
+                        amount_remaining -= paid_amount
+                        invoice.outstanding_balance = 0
                         invoice.is_settled = True
                         invoice.save()
 
-                        # Create a transaction for the invoice
-                        invoice_transaction = Transaction(
+                        # Log the payment transaction
+                        Transaction.objects.create(
                             member=member,
-                            amount=invoice.amount,
+                            amount=paid_amount,
                             comment='INVOICE_PAYMENT',
-                            trans_id=invoice.invoice_number,
+                            trans_id=f"INV-{uuid.uuid4().hex[:6].upper()}",
                             phone_number="-",
                             invoice=invoice,
                         )
-                        invoice_transaction.save()
-                        member.account_balance += invoice.amount
+
+                        # Update member's account balance
+                        member.account_balance += paid_amount
                         member.save()
                     else:
                         # Partially settle the invoice
-                        invoice.amount -= amount_remaining
+                        paid_amount = amount_remaining
+                        invoice.outstanding_balance -= paid_amount
                         amount_remaining = 0
                         invoice.save()
 
-                # Add any remaining amount as a top-up
+                        # Log the partial payment transaction
+                        Transaction.objects.create(
+                            member=member,
+                            amount=paid_amount,
+                            comment='INV_PARTIAL_PAY',
+                            trans_id=f"INV-{uuid.uuid4().hex[:6].upper()}",
+                            phone_number="-",
+                            invoice=invoice,
+                        )
+
+                        # Update member's account balance
+                        member.account_balance += paid_amount
+                        member.save()
+
+                # Handle any remaining amount as a top-up
                 if amount_remaining > 0:
-                    # Add remaining amount to the member's balance
                     member.account_balance += amount_remaining
                     member.save()
 
-                    # Create a top-up transaction for the remaining amount
-                    top_up_transaction = Transaction(
+                    Transaction.objects.create(
                         member=member,
                         amount=amount_remaining,
                         comment='ACCOUNT_TOPUP',
                         trans_id=f"TXN-{uuid.uuid4().hex[:6].upper()}",
                         phone_number=member.phone_number,
                     )
-                    top_up_transaction.save()
 
-                    return redirect('list_transactions')
+                # Skip saving the main transaction to avoid duplication
+                return redirect('list_transactions')
 
-            if transaction.comment == 'PENALTY_PAYMENT' and transaction.member:
+            elif transaction.comment == 'ACCOUNT_TOPUP' and transaction.member:
+                # Handle Account Top-Up and invoice payment logic
+                member = transaction.member
+                top_up_amount = transaction.amount
+
+                # First, check for outstanding invoices
+                outstanding_invoices = Invoice.objects.filter(
+                    member=member, is_settled=False
+                ).order_by('issue_date')
+
+                amount_remaining = top_up_amount
+                for invoice in outstanding_invoices:
+                    if amount_remaining <= 0:
+                        break
+
+                    if invoice.outstanding_balance <= amount_remaining:
+                        # Fully settle the invoice
+                        paid_amount = invoice.outstanding_balance
+                        amount_remaining -= paid_amount
+                        invoice.outstanding_balance = 0  # Set outstanding balance to zero
+                        invoice.is_settled = True  # Mark invoice as settled
+                        invoice.save()
+
+                        # Log the payment transaction
+                        Transaction.objects.create(
+                            member=member,
+                            amount=paid_amount,
+                            comment='INVOICE_PAYMENT',
+                            trans_id=f"INV-{uuid.uuid4().hex[:6].upper()}",
+                            phone_number="-",
+                            invoice=invoice,
+                        )
+
+                        # Update member's account balance
+                        member.account_balance += paid_amount
+                        member.save()
+                    else:
+                        # Partially settle the invoice
+                        paid_amount = amount_remaining
+                        invoice.outstanding_balance -= paid_amount
+                        amount_remaining = 0
+                        invoice.save()
+
+                        # Log the partial payment transaction
+                        Transaction.objects.create(
+                            member=member,
+                            amount=paid_amount,
+                            comment='INV_PARTIAL_PAY',
+                            trans_id=f"INV-{uuid.uuid4().hex[:6].upper()}",
+                            phone_number="-",
+                            invoice=invoice,
+                        )
+
+                        # Update member's account balance
+                        member.account_balance += paid_amount
+                        member.save()
+
+                # If there's remaining amount, add it to the account balance
+                if amount_remaining > 0:
+                    member.account_balance += amount_remaining
+                    member.save()
+
+                    # Log the remaining amount as a top-up
+                    Transaction.objects.create(
+                        member=member,
+                        amount=amount_remaining,
+                        comment='ACCOUNT_TOPUP',
+                        trans_id=f"TXN-{uuid.uuid4().hex[:6].upper()}",
+                        phone_number=member.phone_number,
+                    )
+
+                return redirect('list_transactions')
+
+            elif transaction.comment == 'PENALTY_PAYMENT' and transaction.member:
                 member = transaction.member
                 remaining_amount = transaction.amount
-                penalties = Penalty.objects.filter(member=member)
+                penalties = Penalty.objects.filter(member=member, is_paid=False).order_by('id')
+
                 for penalty in penalties:
                     if remaining_amount <= 0:
                         break
 
                     if penalty.amount <= remaining_amount:
-                        # Fully settle the penalty
                         remaining_amount -= penalty.amount
                         penalty.is_paid = True
                         penalty.save()
 
-                        # Create a transaction for the penalty
-                        penalty_transaction = Transaction(
+                        Transaction.objects.create(
                             member=member,
                             amount=penalty.amount,
                             comment='PENALTY_PAYMENT',
-                            trans_id=penalty.invoice.invoice_number,
+                            trans_id=f"PEN-{uuid.uuid4().hex[:6].upper()}",
                             phone_number="-",
                             invoice=penalty.invoice,
                         )
-                        penalty_transaction.save()
                         member.account_balance += penalty.amount
                         member.save()
                     else:
-                        # Partially settle the penalty
                         penalty.amount -= remaining_amount
-                        remaining_amount = 0
                         penalty.save()
+                        remaining_amount = 0
 
-                # Add any remaining amount as a top-up
                 if remaining_amount > 0:
-                    # Add remaining amount to the member's balance
                     member.account_balance += remaining_amount
                     member.save()
 
-                    # Create a top-up transaction for the remaining amount
-                    top_up_transaction = Transaction(
+                    Transaction.objects.create(
                         member=member,
                         amount=remaining_amount,
                         comment='ACCOUNT_TOPUP',
                         trans_id=f"TXN-{uuid.uuid4().hex[:6].upper()}",
                         phone_number=member.phone_number,
                     )
-                    top_up_transaction.save()
 
-                    return redirect('list_transactions')
+                # Skip saving the main transaction to avoid duplication
+                return redirect('list_transactions')
 
+            # Save the main transaction only for unrelated cases
             transaction.save()
-            # Form is valid, and the transaction
-            # has been processed, render the form again
             return redirect('list_transactions')
 
     else:

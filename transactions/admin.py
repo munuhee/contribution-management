@@ -4,7 +4,8 @@ from .models import Invoice, Transaction, UnmatchedTransaction
 
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = (
-        'invoice_number', 'issue_date', 'due_date', 'amount', 'is_settled'
+        'invoice_number', 'issue_date',
+        'due_date', 'amount', 'outstanding_balance', 'is_settled'
     )
     list_filter = ('issue_date', 'due_date', 'is_settled')
     search_fields = ('invoice_number', 'description')
@@ -12,7 +13,10 @@ class InvoiceAdmin(admin.ModelAdmin):
     date_hierarchy = 'issue_date'
     fieldsets = (
         (None, {
-            'fields': ('invoice_number', 'amount', 'description', 'is_settled')
+            'fields': (
+                'invoice_number', 'amount',
+                'outstanding_balance', 'description', 'is_settled'
+            )
         }),
         ('Date Information', {
             'fields': ('issue_date', 'due_date'),

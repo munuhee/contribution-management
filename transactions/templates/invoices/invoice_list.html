@@ -15,6 +15,7 @@
                     <tr class="bg-gray-100 text-left text-gray-600 uppercase text-sm leading-normal">
                         <th class="py-3 px-6">Invoice Number</th>
                         <th class="py-3 px-6">Amount</th>
+                        <th class="py-3 px-6">Outstanding</th>
                         <th class="py-3 px-6">Due Date</th>
                         <th class="py-3 px-6">Settled</th>
                         <th class="py-3 px-6">Actions</th>
@@ -25,6 +26,7 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6">{{ invoice.invoice_number }}</td>
                         <td class="py-3 px-6">{{ invoice.amount }}</td>
+                        <td class="py-3 px-6">{{ invoice.outstanding_balance }}</td>
                         <td class="py-3 px-6">{{ invoice.due_date }}</td>
                         <td class="py-3 px-6">
                             {% if invoice.is_settled %}

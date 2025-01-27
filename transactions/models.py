@@ -24,8 +24,14 @@ class Invoice(models.Model):
     issue_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    outstanding_balance = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     is_settled = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and self.outstanding_balance is None:
+            self.outstanding_balance = self.amount
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Invoice {self.invoice_number} - {self.amount}"
@@ -35,9 +41,9 @@ class Transaction(models.Model):
     COMMENT_CHOICES = [
         ('INVOICE_CREATION', 'Invoice Creation'),
         ('INVOICE_PAYMENT', 'Invoice Payment'),
+        ('INV_PARTIAL_PAY', 'Inv Partial Pay'),
         ('PENALTY_PAYMENT', 'Penalty Payment'),
         ('ACCOUNT_TOPUP', 'Account Top-up'),
-        ('OTHER', 'Other'),
     ]
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, blank=True, null=True
@@ -52,7 +58,7 @@ class Transaction(models.Model):
         null=True, blank=True, related_name='transactions'
     )
     comment = models.CharField(
-        max_length=20, choices=COMMENT_CHOICES, default='OTHER'
+        max_length=20, choices=COMMENT_CHOICES, default='ACCOUNT_TOPUP'
     )
 
     def save(self, *args, **kwargs):
