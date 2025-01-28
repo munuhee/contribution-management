@@ -163,14 +163,23 @@ The Contribution Management App is designed to manage contributions among member
   <summary>Click to view screenshots</summary>
 
   ![Screenshot 2025-01-19 181803](https://github.com/user-attachments/assets/6b9ce82a-af09-4d34-bd1e-d7b1a974ea7f)
-  ![Screenshot 2025-01-19 181132](https://github.com/user-attachments/assets/d4471948-3e7a-4664-9548-da9e04b7927d)
-  ![Screenshot 2025-01-19 181218](https://github.com/user-attachments/assets/417dcdd3-9353-4589-ba0e-7cecbc7de97d)
-  ![Screenshot 2025-01-19 181635](https://github.com/user-attachments/assets/8c06fa9e-fee3-4183-8f26-60184b6f1bed)
-  ![Screenshot 2025-01-19 181652](https://github.com/user-attachments/assets/3949164d-41f5-43fd-86d1-92c8cc58888f)
-  ![Screenshot 2025-01-19 181711](https://github.com/user-attachments/assets/395ce5c1-bd67-4c98-bcb9-fc3c18673fcd)
+  
+  ![Screenshot 2025-01-28 200935](https://github.com/user-attachments/assets/42207e03-9598-49ab-87f1-2bc1f630042b)
+  
+  ![Screenshot 2025-01-28 200607](https://github.com/user-attachments/assets/a2354ed8-0061-4661-aab9-55c074f3fa6c)
+  
+  ![Screenshot 2025-01-28 200553](https://github.com/user-attachments/assets/8327d407-2437-4914-a29b-42eb7457123e)
+  
+  ![Screenshot 2025-01-28 200540](https://github.com/user-attachments/assets/29e29239-ed83-4784-8cda-34bc1d4d2dfb)
+  
+  ![Screenshot 2025-01-28 201437](https://github.com/user-attachments/assets/1b10dde1-daf9-4c29-bfab-8706803f98c6)
+  
   ![Screenshot 2025-01-19 204735](https://github.com/user-attachments/assets/1fe0c6a3-bbf2-4c3c-9e4e-e4db103aee55)
+  
   ![Screenshot 2025-01-19 181731](https://github.com/user-attachments/assets/28ad7385-2363-490f-8d62-0b4780e7887d)
+  
   ![Screenshot 2025-01-19 181839](https://github.com/user-attachments/assets/2387d5be-87e7-4a1f-b9b9-e107e633065e)
+  
   ![Screenshot 2025-01-19 181912](https://github.com/user-attachments/assets/3dc4cba0-2cc7-412c-9b42-191df4142e22)
 
 </details>
