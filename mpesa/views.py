@@ -68,11 +68,15 @@ class MpesaConfirmationView(View):
 
         try:
             if bill_ref_number.endswith("P"):
+                logger.info("Penalty payment detected")
+                # Remove the "P" from the bill reference number
+                bill_ref_number = bill_ref_number[:-1]
                 self.handle_penalty_payment(
                     data, trans_id, trans_amount,
                     bill_ref_number, msisdn
                 )
             else:
+                logger.info("Regular payment detected")
                 self.handle_regular_payment(
                     data, trans_id,
                     trans_amount, bill_ref_number,
@@ -128,15 +132,26 @@ class MpesaConfirmationView(View):
     def handle_penalty_payment(
         self, data, trans_id, trans_amount, bill_ref_number, msisdn
     ):
-        """Handle penalty payments."""
+        """
+        Handle penalty payments
+        by processing multiple penalties in order.
+        """
         try:
-            # Pay the oldest unpaid penalty first
-            penalty = self.get_oldest_unpaid_penalty(bill_ref_number)
-            if penalty:
-                self.process_penalty_payment(
-                    penalty, trans_id, trans_amount, msisdn
+            member = self.get_member_by_bill_ref(bill_ref_number)
+            if member:
+                logger.info("Member found for penalty payment")
+                # Pay penalties first
+                remaining_amount = self.pay_penalties_if_any(
+                    member, trans_amount, trans_id, msisdn
                 )
+
+                # Use remaining amount to settle invoices if applicable
+                if remaining_amount > 0:
+                    self.settle_invoices(
+                        member, remaining_amount, trans_id, msisdn
+                    )
             else:
+                logger.info("Member not found for penalty payment")
                 self.create_unmatched_transaction(
                     trans_id, trans_amount, msisdn
                 )
@@ -170,72 +185,84 @@ class MpesaConfirmationView(View):
         )
         send_sms(to=msisdn, message=message)
 
-    def settle_invoices(self, member, amount, trans_id, msisdn):
-        """Settle unpaid invoices for a member, starting from the oldest."""
-        try:
-            # Pay penalties first
-            remaining_amount = self.pay_penalties_if_any(
-                member, amount, trans_id, msisdn
-            )
-
-            # After penalties, settle invoices if there's remaining amount
-            if remaining_amount > 0:
-                outstanding_invoices = Invoice.objects.filter(
-                    member=member, is_settled=False
-                ).order_by('issue_date')
-
-                for invoice in outstanding_invoices:
-                    if remaining_amount <= 0:
-                        break
-
-                    if invoice.outstanding_balance <= remaining_amount:
-                        self.settle_full_invoice(
-                            invoice, remaining_amount, trans_id, msisdn, member
-                        )
-                        remaining_amount -= invoice.outstanding_balance
-                    else:
-                        self.settle_partial_invoice(
-                            invoice, remaining_amount, trans_id, msisdn, member
-                        )
-                        remaining_amount = 0
-
-                # Handle any remaining amount as a top-up
-                if remaining_amount > 0:
-                    self.top_up_account_balance(
-                        remaining_amount, trans_id, msisdn, member
-                    )
-        except Exception as e:
-            logger.error(f"Error settling invoices: {e}")
-
     def pay_penalties_if_any(self, member, amount, trans_id, msisdn):
-        """Pay the oldest unpaid penalty first"""
+        """Pay penalties sequentially (oldest first)"""
         penalties = Penalty.objects.filter(
             member=member, is_paid=False
-        ).order_by('date')
+        ).order_by('date')  # Oldest penalties first
 
         remaining_amount = amount
         for penalty in penalties:
             if remaining_amount <= 0:
                 break
 
+            # Pay off the penalty completely or partially
             if penalty.amount <= remaining_amount:
-                self.process_penalty_payment(
-                    penalty,
-                    trans_id,
-                    penalty.amount,
-                    msisdn
-                )
-                remaining_amount -= penalty.amount
+                paid_amount = penalty.amount
+                penalty.is_paid = True
+                penalty.save()
             else:
-                self.process_penalty_payment(
-                    penalty,
-                    trans_id,
-                    remaining_amount,
-                    msisdn
+                paid_amount = remaining_amount
+                penalty.amount -= remaining_amount
+                penalty.save()
+
+            # Record the transaction for the penalty payment
+            Transaction.objects.create(
+                member=member,
+                amount=paid_amount,
+                comment='PENALTY_PAYMENT',
+                trans_id=trans_id,
+                phone_number=msisdn,
+                invoice=penalty.invoice
+            )
+
+            # Send SMS confirmation for each penalty payment
+            send_sms(
+                to=msisdn,
+                message=(
+                    f"Penalty payment of {paid_amount} successfully processed."
                 )
-                remaining_amount = 0
+            )
+
+            # Deduct the paid amount from the remaining amount
+            remaining_amount -= paid_amount
 
         return remaining_amount
+
+    def settle_invoices(self, member, amount, trans_id, msisdn):
+        """Settle unpaid invoices for a member, starting from the oldest."""
+        try:
+            outstanding_invoices = Invoice.objects.filter(
+                member=member, is_settled=False
+            ).order_by('issue_date')  # Oldest invoices first
+
+            remaining_amount = amount
+            for invoice in outstanding_invoices:
+                if remaining_amount <= 0:
+                    break
+
+                if invoice.outstanding_balance <= remaining_amount:
+                    # Fully settle the invoice
+                    self.settle_full_invoice(
+                        invoice, remaining_amount,
+                        trans_id, msisdn, member
+                    )
+                    remaining_amount -= invoice.outstanding_balance
+                else:
+                    # Partially settle the invoice
+                    self.settle_partial_invoice(
+                        invoice, remaining_amount,
+                        trans_id, msisdn, member
+                    )
+                    remaining_amount = 0
+
+            # Handle any remaining amount as a top-up
+            if remaining_amount > 0:
+                self.top_up_account_balance(
+                    remaining_amount, trans_id, msisdn, member
+                )
+        except Exception as e:
+            logger.error(f"Error settling invoices: {e}")
 
     def settle_full_invoice(
         self, invoice, amount_remaining, trans_id, msisdn, member
@@ -255,8 +282,10 @@ class MpesaConfirmationView(View):
             invoice=invoice
         )
 
-        member.account_balance += paid_amount
-        member.save()
+        send_sms(
+            to=msisdn,
+            message=f"Invoice payment of {paid_amount} successfully processed."
+        )
 
     def settle_partial_invoice(
         self, invoice, amount_remaining, trans_id, msisdn, member
@@ -275,11 +304,17 @@ class MpesaConfirmationView(View):
             invoice=invoice
         )
 
-        member.account_balance += paid_amount
-        member.save()
+        send_sms(
+            to=msisdn,
+            message=(
+                f"Partial invoice payment of {paid_amount}"
+                f"successfully processed."
+            )
+        )
 
     def top_up_account_balance(
-        self, amount_remaining, trans_id, msisdn, member
+        self, amount_remaining,
+        trans_id, msisdn, member
     ):
         """Top up the member's account balance."""
         member.account_balance += amount_remaining
@@ -291,4 +326,9 @@ class MpesaConfirmationView(View):
             comment='ACCOUNT_TOPUP',
             trans_id=trans_id,
             phone_number=msisdn
+        )
+
+        send_sms(
+            to=msisdn,
+            message=f"Account topped up with {amount_remaining} successfully."
         )
