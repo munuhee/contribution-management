@@ -497,10 +497,14 @@ def invoice_create(request):
 # Retrieve Invoice (List View)
 def invoice_list(request):
     invoices = Invoice.objects.all()
+    paginator = Paginator(invoices, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         'invoices/invoice_list.html',
-        {'invoices': invoices}
+        {'page_obj': page_obj}
     )
 
 
