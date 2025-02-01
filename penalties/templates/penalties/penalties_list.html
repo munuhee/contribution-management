@@ -43,6 +43,7 @@
                     <th class="px-4 py-2">Case</th>
                     <th class="px-4 py-2">Amount(KES)</th>
                     <th class="px-4 py-2">Paid</th>
+                    <th class="px-4 py-2">Comment</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
             </thead>
@@ -52,7 +53,7 @@
                     <td class="px-4 py-2">{{ forloop.counter }}</td>
                     <td class="px-4 py-2">{{ penalty.date }}</td>
                     <td class="px-4 py-2">{{ penalty.member.member_number }}</td>
-                    <td class="px-4 py-2">{{ penalty.invoice.case.case_number }}</td>
+                    <td class="px-4 py-2">{% if penalty.case %}{{ penalty.invoice.case.case_number }} {% else %} n/a {% endif %}</td>
                     <td class="px-4 py-2">{{ penalty.amount }}</td>
                     <td class="px-4 py-2">
                         {% if penalty.is_paid %}
@@ -61,6 +62,7 @@
                         <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full">false</span>
                         {% endif %}
                     </td>
+                    <td class="px-4 py-2">{{ penalty.comment }}</td>
                     <td class="px-4 py-2 flex space-x-3">
                         <a href="{% url 'update_penalty' penalty.id %}" class="text-blue-500 hover:text-blue-700">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

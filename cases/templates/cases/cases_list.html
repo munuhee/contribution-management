@@ -39,7 +39,9 @@
                 <tr>
                     <th class="px-4 py-2">#</th>
                     <th class="px-4 py-2">Case Number</th>
+                    <th class="px-4 py-2">Amount</th>
                     <th class="px-4 py-2">Description</th>
+                    <th class="px-4 py-2">Contribution Deadline</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
             </thead>
@@ -48,7 +50,9 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-2">{{ forloop.counter0|add:page_obj.start_index }}</td>
                     <td class="px-4 py-2">{{ case.case_number }}</td>
+                    <td class="px-4 py-2">KSh {{ case.amount }}</td>
                     <td class="px-4 py-2">{{ case.description }}</td>
+                    <td class="px-4 py-2">{{ case.deadline|date:"d-m-Y H:i:s" }}</td>
                     <td class="px-4 py-2">
                         <div class="flex space-x-3">
                             <a href="{% url 'update_case' case.id %}" class="text-blue-500 hover:text-blue-700">

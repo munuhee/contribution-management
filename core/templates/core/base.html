@@ -143,30 +143,30 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       {% if messages %}
-      {% for message in messages %}
-      Swal.fire({
-        icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}',
-        title: '{{ message }}',
-        showConfirmButton: false,
-        timer: 3000,
-        position: 'top-end',
-        background: '#64B5F6',
-        iconColor: '#ffffff',
-        titleText: '{{ message }}',
-        toast: true,
-        showClass: {
-          popup: 'swal2-noanimation',
-        },
-        hideClass: {
-          popup: 'swal2-hide',
-        },
-        customClass: {
-          popup: 'rounded-md shadow-sm',
-          title: 'font-normal text-sm text-white',
-          icon: 'text-sm',
-        }
-      });
-      {% endfor %}
+        {% for message in messages %}
+          Swal.fire({
+            icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}',
+            title: '{{ message }}',
+            showConfirmButton: false,
+            timer: 3000,
+            position: 'top-end',
+            background: '{% if message.tags == "error" or message.tags == "warning" %}#FF2400{% else %}#64B5F6{% endif %}',
+            iconColor: '#ffffff',
+            titleText: '{{ message }}',
+            toast: true,
+            showClass: {
+              popup: 'swal2-noanimation',
+            },
+            hideClass: {
+              popup: 'swal2-hide',
+            },
+            customClass: {
+              popup: 'rounded-md shadow-sm',
+              title: 'font-normal text-sm text-white',
+              icon: 'text-sm',
+            }
+          });
+        {% endfor %}
       {% endif %}
     });
   </script>
