@@ -32,7 +32,7 @@ class CaseForm(forms.ModelForm):
                 'dark:border-gray-600 dark:placeholder-gray-400'
                 'dark:text-white dark:focus:ring-blue-500'
                 'dark:focus:border-blue-500',
-                'rows': 4, 'placeholder': 'Enter description'
+                'rows': 2, 'placeholder': 'Enter description'
             }),
             'deadline': forms.DateTimeInput(attrs={
                 'class': 'bg-gray-50 border border-gray-300 text-gray-900'

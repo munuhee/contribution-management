@@ -40,7 +40,8 @@ class MemberForm(forms.ModelForm):
                     'dark:border-gray-600 dark:placeholder-gray-400'
                     'dark:text-white dark:focus:ring-blue-500'
                     'dark:focus:border-blue-500',
-                    'placeholder': 'Enter phone number'
+                    'placeholder': 'Ensure phone number includes'
+                    'a country code'
                 }
             ),
             'member_number': forms.TextInput(
@@ -80,7 +81,7 @@ class MemberForm(forms.ModelForm):
         labels = {
             'first_name': 'First Name',
             'last_name': 'Last Name',
-            'phone_number': 'Phone Number',
+            'phone_number': 'Phone Number (e.g. +254712345678)',
             'member_number': 'Member Number',
             'national_id_number': 'National ID Number',
             'account_balance': 'Account Balance (KES)',
