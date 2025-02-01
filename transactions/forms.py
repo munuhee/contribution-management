@@ -45,6 +45,14 @@ class TransactionForm(forms.ModelForm):
             'amount': 'Amount (KES)',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remove the 'INVOICE_CREATION' option from the comment choices
+        self.fields['comment'].choices = [
+            choice for choice in self.fields['comment'].choices
+            if choice[0] != 'INVOICE_CREATION'
+        ]
+
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
         if amount <= 0:
@@ -122,6 +130,7 @@ class UnmatchedTransactionForm(forms.ModelForm):
                     'dark:border-gray-600 dark:placeholder-gray-400'
                     'dark:text-white dark:focus:ring-blue-500'
                     'dark:focus:border-blue-500',
+                    'rows': 2,
                 }
             )
         }
@@ -196,6 +205,7 @@ class InvoiceForm(forms.ModelForm):
                     'dark:border-gray-600 dark:placeholder-gray-400'
                     'dark:text-white dark:focus:ring-blue-500'
                     'dark:focus:border-blue-500',
+                    'rows': 2,
                     'step': '0.01'
                 }
             ),

@@ -1,12 +1,22 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import RegexValidator
 from penalties.models import Penalty
+
+# Validator to ensure phone numbers include a country code.
+phone_regex = RegexValidator(
+    regex=r'^\+\d{10,15}$',
+    message=(
+        "Phone number must be in the format: "
+        "+254712345678' and contain only digits after the '+'."
+    )
+)
 
 
 class Member(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=15, validators=[phone_regex])
     member_number = models.CharField(max_length=10, unique=True)
     national_id_number = models.CharField(max_length=20)
     account_balance = models.DecimalField(max_digits=10, decimal_places=2)

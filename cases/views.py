@@ -128,7 +128,7 @@ def update_case(request, case_id):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = CaseForm(instance=case)
-    return render(request, 'cases/cases_form.html', {'form': form})
+    return render(request, 'cases/case_form.html', {'form': form})
 
 
 # Delete a case

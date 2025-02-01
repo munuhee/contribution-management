@@ -215,10 +215,10 @@ def add_transaction(request):
                             comment='PENALTY_PAYMENT',
                             trans_id=f"PEN-{uuid.uuid4().hex[:6].upper()}",
                             phone_number="-",
-                            invoice=penalty.invoice,
+                            invoice=(
+                                None if penalty.invoice is None else penalty.invoice
+                            ),
                         )
-                        member.account_balance += penalty.amount
-                        member.save()
                     else:
                         penalty.amount -= remaining_amount
                         penalty.save()

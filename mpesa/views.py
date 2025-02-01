@@ -176,7 +176,7 @@ class MpesaConfirmationView(View):
             comment='PENALTY_PAYMENT',
             trans_id=trans_id,
             phone_number=msisdn,
-            invoice=penalty.invoice
+            invoice=None if penalty.invoice is None else penalty.invoice
         )
 
         # Send SMS confirmation
@@ -256,11 +256,15 @@ class MpesaConfirmationView(View):
                     )
                     remaining_amount = 0
 
-            # Handle any remaining amount as a top-up
-            if remaining_amount > 0:
+            # Ensure that a top-up only happens if there's
+            # ACTUALLY extra money left
+            if remaining_amount > 0 and any(
+                inv.outstanding_balance > 0 for inv in outstanding_invoices
+            ):
                 self.top_up_account_balance(
                     remaining_amount, trans_id, msisdn, member
                 )
+
         except Exception as e:
             logger.error(f"Error settling invoices: {e}")
 
@@ -281,6 +285,9 @@ class MpesaConfirmationView(View):
             phone_number=msisdn,
             invoice=invoice
         )
+        # Update the member's account balance
+        member.account_balance += paid_amount
+        member.save()
 
         send_sms(
             to=msisdn,

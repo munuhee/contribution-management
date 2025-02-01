@@ -13,7 +13,7 @@ def list_penalties(request):
     if query:
         penalties = Penalty.objects.filter(
             Q(member__member_number__icontains=query) |
-            Q(case__case_number__icontains=query) |
+            Q(invoice__case__case_number__icontains=query) |
             Q(amount__icontains=query) |
             Q(is_paid__icontains=query)
         )
